@@ -1,0 +1,23 @@
+name: Strategy 1H
+
+on:
+  schedule:
+    - cron: '30 14 * * 1-5'
+  workflow_dispatch:
+
+jobs:
+  trading:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    - run: |
+        pip install requests pandas numpy
+    - run: python strategy_1h_rest.py
+      env:
+        ALPACA_ENDPOINT: ${{ secrets.ALPACA_ENDPOINT }}
+        ALPACA_KEY: ${{ secrets.ALPACA_KEY }}
+        ALPACA_SECRET: ${{ secrets.ALPACA_SECRET }}
+        FINNHUB_KEY: ${{ secrets.FINNHUB_KEY }}
