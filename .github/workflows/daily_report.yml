@@ -39,6 +39,10 @@ jobs:
       run: |
         git fetch origin
         git checkout origin/main -- strategy_1h_live_state.json 2>/dev/null || true
+        # Ensure the state file exists with empty initial state
+        if [ ! -f strategy_1h_live_state.json ]; then
+          echo '{}' > strategy_1h_live_state.json
+        fi
 
     - name: Send Daily Report
       run: python portfolio_report.py
@@ -48,6 +52,13 @@ jobs:
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
-        git add strategy_1h_live_state.json
-        git commit -m "Daily report: $(date)" || true
-        git push || true
+        # Only add and commit if the file exists and has changes
+        if [ -f strategy_1h_live_state.json ] && git diff --quiet strategy_1h_live_state.json; then
+          echo "No changes to state file"
+        elif [ -f strategy_1h_live_state.json ]; then
+          git add strategy_1h_live_state.json
+          git commit -m "Daily report: $(date)" || true
+          git push || true
+        else
+          echo "State file does not exist, skipping save"
+        fi
