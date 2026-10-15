@@ -5,6 +5,15 @@ on:
     # ہر روز ساعت 4:30 PM ET (20:30 UTC) = 00:00 Tehran (فردا)
     - cron: '30 20 * * 1-5'  # Mon-Fri, 4:30 PM ET
   workflow_dispatch:  # Manual trigger
+    inputs:
+      token:
+        description: 'توکن ربات (اختیاری؛ خالی = secret)'
+        required: false
+        default: ''
+      chat_id:
+        description: 'شناسه چت'
+        required: false
+        default: '75439320'
 
 jobs:
   send_report:
@@ -24,6 +33,11 @@ jobs:
         python -m pip install --upgrade pip
         pip install alpaca-trade-api python-telegram-bot requests pandas numpy
 
+    - name: Mask Telegram token
+      env:
+        TG_TOKEN: ${{ github.event.inputs.token || secrets.TELEGRAM_BOT_TOKEN }}
+      run: echo "::add-mask::$TG_TOKEN"
+
     - name: Create config file
       run: |
         cat > config.txt << 'EOF'
@@ -31,8 +45,8 @@ jobs:
         ALPACA_KEY=${{ secrets.ALPACA_KEY }}
         ALPACA_SECRET=${{ secrets.ALPACA_SECRET }}
         FINNHUB_KEY=${{ secrets.FINNHUB_KEY }}
-        TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}
-        TELEGRAM_CHAT_ID=${{ secrets.TELEGRAM_CHAT_ID }}
+        TELEGRAM_BOT_TOKEN=${{ github.event.inputs.token || secrets.TELEGRAM_BOT_TOKEN }}
+        TELEGRAM_CHAT_ID=${{ github.event.inputs.chat_id || secrets.TELEGRAM_CHAT_ID }}
         EOF
 
     - name: Load latest state
