@@ -2,15 +2,22 @@ name: Strategy 1H
 
 on:
   schedule:
-    - cron: '30 14 * * 1-5'
+    # hourly at :30; the script skips cycles when /clock says the market is closed (works for EDT and EST)
+    - cron: '30 13-20 * * 1-5'
   workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: strategy-1h
 
 jobs:
   trading:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-python@v4
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
       with:
         python-version: '3.11'
     - run: |
@@ -21,3 +28,13 @@ jobs:
         ALPACA_KEY: ${{ secrets.ALPACA_KEY }}
         ALPACA_SECRET: ${{ secrets.ALPACA_SECRET }}
         FINNHUB_KEY: ${{ secrets.FINNHUB_KEY }}
+        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+    - name: Save state
+      if: always()
+      run: |
+        git config user.email "action@github.com"
+        git config user.name "GitHub Action"
+        git add strategy_1h_live_state.json
+        git commit -m "strategy state $(date -u +%F_%H%M)" || exit 0
+        for i in 1 2 3; do git pull --rebase -q && git push -q && break || sleep 5; done

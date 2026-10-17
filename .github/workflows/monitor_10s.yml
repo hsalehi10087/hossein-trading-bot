@@ -1,0 +1,38 @@
+name: Monitor 10s (read-only)
+
+on:
+  schedule:
+    - cron: '25 13 * * 1-5'   # covers 13:30-19:20 UTC
+    - cron: '15 19 * * 1-5'   # covers 19:20-close
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: monitor-${{ github.event.schedule }}
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 355
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    - run: pip install requests
+    - run: python monitor_10s.py
+      env:
+        ALPACA_ENDPOINT: ${{ secrets.ALPACA_ENDPOINT }}
+        ALPACA_KEY: ${{ secrets.ALPACA_KEY }}
+        ALPACA_SECRET: ${{ secrets.ALPACA_SECRET }}
+        MAX_MINUTES: ${{ github.event.schedule == '25 13 * * 1-5' && '345' || '120' }}
+    - name: Commit logs
+      if: always()
+      run: |
+        git config user.email "action@github.com"
+        git config user.name "GitHub Action"
+        git add logs
+        git commit -m "monitor log $(date -u +%F_%H%M)" || exit 0
+        for i in 1 2 3; do git pull --rebase -q && git push -q && break || sleep 5; done
