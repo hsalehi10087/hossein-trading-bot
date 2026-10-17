@@ -292,3 +292,6 @@ Paper Account → Positions → PnL
 - `GITHUB_ACTIONS_SETUP.md`
 - `README_1H_STRATEGY.md`
 - `DEPLOYMENT_GUIDE.md`
+
+## Options overlay (`options_overlay.py`)
+Long calls only (max loss = premium). Entry: BULL 1H regime + price above 20-day average + no earnings within 7 days; 30-60 DTE, delta 0.55-0.70, OI>=100, spread<=12%; premium budget 10% of equity (`OPT_BUDGET_PCT`), max 4 positions, strongest momentum gets the largest share. Exit: sell half at +60%, trail 25% from peak, stop -35%, close at <=7 DTE. Disable with `OPTIONS_ENABLED=0`. Not backtested; requires options approval on the Alpaca account.

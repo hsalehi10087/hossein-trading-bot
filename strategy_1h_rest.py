@@ -10,6 +10,7 @@ from enum import Enum
 import numpy as np
 import requests
 import pandas as pd
+import options_overlay
 
 def cfg(name, default=None):
     """Load config"""
@@ -110,7 +111,7 @@ def get_price(symbol):
         pass
     return None
 
-def get_bars(symbols, days=10):
+def get_bars(symbols, days=10, timeframe="1Hour"):
     """Hourly bars for all symbols in one call (Alpaca market data, IEX feed).
     Returns {symbol: [close, ...]} oldest -> newest. Missing symbols are omitted."""
     out = {}
@@ -118,7 +119,7 @@ def get_bars(symbols, days=10):
     headers = {"APCA-API-KEY-ID": cfg("ALPACA_KEY"), "APCA-API-SECRET-KEY": cfg("ALPACA_SECRET")}
     token = None
     for _ in range(5):
-        params = {"symbols": ",".join(symbols), "timeframe": "1Hour", "start": start,
+        params = {"symbols": ",".join(symbols), "timeframe": timeframe, "start": start,
                   "limit": 1000, "feed": "iex", "adjustment": "raw", "sort": "asc"}
         if token:
             params["page_token"] = token
@@ -239,6 +240,7 @@ def main():
     equity = float(acct.get('equity', 100000))
     budget = (equity * 0.5) / len(symbols)
     signals = []
+    regimes, prices = {}, {}
 
     for sym in symbols:
         closes = bars.get(sym, [])
@@ -247,6 +249,7 @@ def main():
             print(f"⚠️  {sym}: insufficient data ({len(closes)} bars) - skipped")
             continue
         regime = detect_regime(np.array(closes, dtype=float))
+        regimes[sym], prices[sym] = regime, price
         pos = state.get(sym, {})
         action, what = decide(pos, price, regime)
         line = f"{sym}: ${price:.2f} | {regime.value}"
@@ -282,9 +285,13 @@ def main():
                 line += " | ❌ order failed"
         print("  " + line)
 
+    if not dry or os.environ.get("OPTIONS_IN_DRY") == "1":
+        signals += options_overlay.run(alpaca, symbols, regimes, prices, bars,
+                                       get_bars(symbols, days=45, timeframe="1Day"), equity, state,
+                                       cfg("ALPACA_KEY"), cfg("ALPACA_SECRET"), cfg("FINNHUB_KEY"), dry=dry)
     json.dump(state, open(state_file, 'w'), indent=2)
     print("\n" + "=" * 70)
-    print(f"✅ Cycle completed: {len(signals)} signals | positions tracked: {len(state)}" + (" (DRY RUN)" if dry else ""))
+    print(f"✅ Cycle completed: {len(signals)} signals | positions tracked: {len([k for k in state if k != '_opt'])}" + (" (DRY RUN)" if dry else ""))
     if signals and not dry:
         msg = "🟢 <b>1H Strategy Signals</b>\n\n" + "\n".join(signals[:10])
         print("✅ Telegram notification sent" if send_telegram(msg) else "⚠️  Telegram notification failed")
