@@ -136,7 +136,7 @@ def contracts_for(alpaca, underlying, today=None):
 
 
 def run(alpaca, symbols, regimes, prices, hourly, daily, equity, state, key, secret, finnhub_key,
-        dry=False, log=print):
+        dry=False, log=print, entries=True):
     """Manage option positions. `state` is mutated: state['_opt'][contract] = {'peak','half'}.
     Returns signal strings; never raises."""
     signals = []
@@ -176,6 +176,8 @@ def run(alpaca, symbols, regimes, prices, hourly, daily, equity, state, key, sec
             opt_state.pop(sym, None)                                    # closed elsewhere
 
         open_n = len(mine)                                              # ---- entries
+        if not entries:
+            return signals
         ranked = sorted((s for s in symbols if s not in roots and regimes.get(s) is not None
                          and regimes[s].name == "BULL" and prices.get(s)),
                         key=lambda s: momentum(hourly.get(s, [])), reverse=True)

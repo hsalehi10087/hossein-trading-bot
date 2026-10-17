@@ -167,6 +167,34 @@ def decide(pos, price, regime):
         return 'buy', 3
     return None, None
 
+
+# --- Risk intelligence -------------------------------------------------------
+TARGET_HOURLY_VOL = 0.004                # position size is scaled so each name carries similar risk
+SCALE_MIN, SCALE_MAX = 0.5, 1.25
+DAILY_LOSS_BRAKE = 0.03                  # no new buys if equity is down >3% vs previous close
+
+def size_scale(closes, n=30):
+    """Volatile names get a smaller budget, calm names a slightly larger one."""
+    c = np.array(closes[-(n + 1):], dtype=float)
+    if len(c) < 10:
+        return 1.0
+    vol = float(np.std(np.diff(c) / c[:-1]))
+    if vol <= 0:
+        return 1.0
+    return float(min(SCALE_MAX, max(SCALE_MIN, TARGET_HOURLY_VOL / vol)))
+
+def risk_off(acct, market_regime):
+    """Returns a reason string when NEW buys must pause, else None. Exits always stay active."""
+    try:
+        eq, last = float(acct.get('equity', 0)), float(acct.get('last_equity', 0))
+        if last > 0 and eq / last - 1 <= -DAILY_LOSS_BRAKE:
+            return f"daily loss brake ({eq / last - 1:+.1%})"
+    except (TypeError, ValueError):
+        pass
+    if market_regime == Regime.BEAR:
+        return "SPY in BEAR regime"
+    return None
+
 # ============================================================================
 # TELEGRAM
 # ============================================================================
@@ -236,7 +264,11 @@ def main():
         else:
             state.pop(s, None)
 
-    bars = get_bars(symbols)
+    bars = get_bars(symbols + ['SPY'])
+    spy = bars.pop('SPY', [])
+    market = detect_regime(np.array(spy, dtype=float)) if len(spy) >= 10 else Regime.RANGE
+    pause = risk_off(acct, market)
+    print(f"Market (SPY): {market.value}" + (f" | ⛔ new buys paused: {pause}" if pause else ""))
     equity = float(acct.get('equity', 100000))
     budget = (equity * 0.5) / len(symbols)
     signals = []
@@ -252,6 +284,8 @@ def main():
         regimes[sym], prices[sym] = regime, price
         pos = state.get(sym, {})
         action, what = decide(pos, price, regime)
+        if action == 'buy' and pause:
+            action, what = None, None
         line = f"{sym}: ${price:.2f} | {regime.value}"
 
         if pos:
@@ -259,7 +293,7 @@ def main():
 
         if action == 'buy':
             level = what
-            qty = int((budget * LEVEL_PCTS[level - 1]) / price)
+            qty = int((budget * size_scale(closes) * LEVEL_PCTS[level - 1]) / price)
             if qty >= 1:
                 ok = dry or alpaca.place_order(sym, qty, "buy")
                 if ok:
@@ -288,7 +322,7 @@ def main():
     if not dry or os.environ.get("OPTIONS_IN_DRY") == "1":
         signals += options_overlay.run(alpaca, symbols, regimes, prices, bars,
                                        get_bars(symbols, days=45, timeframe="1Day"), equity, state,
-                                       cfg("ALPACA_KEY"), cfg("ALPACA_SECRET"), cfg("FINNHUB_KEY"), dry=dry)
+                                       cfg("ALPACA_KEY"), cfg("ALPACA_SECRET"), cfg("FINNHUB_KEY"), dry=dry, entries=not pause)
     json.dump(state, open(state_file, 'w'), indent=2)
     print("\n" + "=" * 70)
     print(f"✅ Cycle completed: {len(signals)} signals | positions tracked: {len([k for k in state if k != '_opt'])}" + (" (DRY RUN)" if dry else ""))

@@ -295,3 +295,8 @@ Paper Account → Positions → PnL
 
 ## Options overlay (`options_overlay.py`)
 Long calls only (max loss = premium). Entry: BULL 1H regime + price above 20-day average + no earnings within 7 days; 30-60 DTE, delta 0.55-0.70, OI>=100, spread<=12%; premium budget 10% of equity (`OPT_BUDGET_PCT`), max 4 positions, strongest momentum gets the largest share. Exit: sell half at +60%, trail 25% from peak, stop -35%, close at <=7 DTE. Disable with `OPTIONS_ENABLED=0`. Not backtested; requires options approval on the Alpaca account.
+
+## Risk intelligence (strategy_1h_rest.py)
+- **Market filter:** SPY hourly regime BEAR -> no new buys (stocks or options). Exits always stay active.
+- **Daily loss brake:** equity down >3% vs previous close -> no new buys.
+- **Volatility-scaled sizing:** budget x clip(0.4% / hourly vol, 0.5, 1.25) per symbol.
