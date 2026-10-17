@@ -110,6 +110,62 @@ def get_price(symbol):
         pass
     return None
 
+def get_bars(symbols, days=10):
+    """Hourly bars for all symbols in one call (Alpaca market data, IEX feed).
+    Returns {symbol: [close, ...]} oldest -> newest. Missing symbols are omitted."""
+    out = {}
+    start = (dt.datetime.utcnow() - dt.timedelta(days=days)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    headers = {"APCA-API-KEY-ID": cfg("ALPACA_KEY"), "APCA-API-SECRET-KEY": cfg("ALPACA_SECRET")}
+    token = None
+    for _ in range(5):
+        params = {"symbols": ",".join(symbols), "timeframe": "1Hour", "start": start,
+                  "limit": 1000, "feed": "iex", "adjustment": "raw", "sort": "asc"}
+        if token:
+            params["page_token"] = token
+        try:
+            r = requests.get("https://data.alpaca.markets/v2/stocks/bars", headers=headers,
+                             params=params, timeout=20)
+            if r.status_code != 200:
+                print(f"Bars error {r.status_code}: {r.text[:120]}")
+                break
+            j = r.json()
+        except Exception as e:
+            print(f"Bars error: {e}")
+            break
+        for s, bars in (j.get("bars") or {}).items():
+            out.setdefault(s, []).extend(b["c"] for b in bars)
+        token = j.get("next_page_token")
+        if not token:
+            break
+    return out
+
+# Strategy parameters (documented in README)
+LEVEL_PCTS = [0.20, 0.30, 0.50]          # share of the per-symbol budget at each level
+DIP_L2, DIP_L3 = 0.008, 0.015            # add at -0.8% and -1.5% below the level-1 price
+TAKE_PROFIT = 0.025                      # +2.5% above average entry
+TRAIL_ARM, TRAIL_PCT = 0.01, 0.01        # trailing stop of 1% from peak, armed after +1% gain
+HARD_STOP = 0.03                         # protective stop 3% below average entry
+
+def decide(pos, price, regime):
+    """Pure decision function. pos = dict(qty, avg, level, l1, peak) or {}.
+    Returns ('buy', level) | ('sell', reason) | (None, None)."""
+    qty = pos.get('qty', 0)
+    if qty <= 0:
+        return ('buy', 1) if regime == Regime.BULL else (None, None)
+    avg, level, l1 = pos['avg'], pos.get('level', 1), pos.get('l1', pos['avg'])
+    peak = max(pos.get('peak', avg), price)
+    if price >= avg * (1 + TAKE_PROFIT):
+        return 'sell', 'TP'
+    if price <= avg * (1 - HARD_STOP):
+        return 'sell', 'STOP'
+    if peak >= avg * (1 + TRAIL_ARM) and price <= peak * (1 - TRAIL_PCT):
+        return 'sell', 'TRAIL'
+    if level == 1 and price <= l1 * (1 - DIP_L2):
+        return 'buy', 2
+    if level == 2 and price <= l1 * (1 - DIP_L3):
+        return 'buy', 3
+    return None, None
+
 # ============================================================================
 # TELEGRAM
 # ============================================================================
@@ -130,122 +186,109 @@ def send_telegram(msg):
 # MAIN STRATEGY
 # ============================================================================
 
-print("\n" + "=" * 70)
-print("🚀 1-HOUR INTRADAY STRATEGY - LIVE EXECUTION")
-print("=" * 70)
-print(f"Time: {dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S UTC')}")
+def main():
+    print("\n" + "=" * 70)
+    print("🚀 1-HOUR INTRADAY STRATEGY - LIVE EXECUTION (paper)")
+    print("=" * 70)
+    print(f"Time: {dt.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}")
+    dry = os.environ.get("DRY_RUN") == "1"
 
-alpaca = AlpacaAPI()
+    alpaca = AlpacaAPI()
+    acct = alpaca.get_account()
+    if not acct:
+        print("❌ Failed to connect to Alpaca")
+        raise SystemExit(1)
+    print("✅ Connected to Alpaca")
+    print(f"   Account: ${float(acct.get('equity', 0)):,.0f} | Cash: ${float(acct.get('cash', 0)):,.0f}")
 
-# Verify connection
-acct = alpaca.get_account()
-if not acct:
-    print("❌ Failed to connect to Alpaca")
-    exit(1)
+    clock = alpaca.get("/clock")
+    if clock is not None and not clock.get("is_open", True):
+        print("⏸ Market closed - no trading this cycle")
+        return
 
-print(f"✅ Connected to Alpaca")
-print(f"   Account: ${float(acct.get('equity', 0)):,.0f}")
-print(f"   Cash: ${float(acct.get('cash', 0)):,.0f}")
+    symbols = []
+    if os.path.exists("portfolio_state.csv"):
+        df = pd.read_csv("portfolio_state.csv")
+        if not df.empty:
+            symbols += [s.strip() for s in str(df.iloc[-1].get('picks', '')).split(';') if s.strip()]
+    if os.path.exists("ai_basket.csv"):
+        df = pd.read_csv("ai_basket.csv")
+        if not df.empty:
+            symbols += df['ticker'].unique().tolist()
+    symbols = [s for s in dict.fromkeys(symbols) if '.' not in s][:12]   # keep order, US tickers only
+    if not symbols:
+        symbols = ["NVDA", "PLTR", "AAPL", "MSFT"]
+    print(f"Monitoring: {', '.join(symbols)}\n")
 
-# Load symbols
-symbols = []
-if os.path.exists("portfolio_state.csv"):
-    df = pd.read_csv("portfolio_state.csv")
-    if not df.empty:
-        picks = df.iloc[-1].get('picks', '')
-        symbols.extend([s.strip() for s in picks.split(';') if s.strip()])
+    state_file = "strategy_1h_live_state.json"
+    state = json.load(open(state_file)) if os.path.exists(state_file) else {}
 
-if os.path.exists("ai_basket.csv"):
-    df = pd.read_csv("ai_basket.csv")
-    if not df.empty:
-        symbols.extend(df['ticker'].unique().tolist())
-
-symbols = list(set(symbols))[:12]
-
-if not symbols:
-    symbols = ["NVDA", "PLTR", "AAPL", "MSFT"]
-
-print(f"Monitoring: {', '.join(symbols)}\n")
-
-# Load state
-state_file = "strategy_1h_live_state.json"
-state = {}
-if os.path.exists(state_file):
-    with open(state_file) as f:
-        state = json.load(f)
-
-signals = []
-equity = float(acct.get('equity', 100000))
-cash_per_symbol = (equity * 0.5) / len(symbols)
-
-for sym in symbols:
-    price = get_price(sym)
-    if not price:
-        print(f"⚠️  {sym}: No price data")
-        continue
-
-    position = state.get(sym, {})
-    qty = position.get('qty', 0)
-    entry = position.get('entry_price', 0)
-    level = position.get('entry_level', 0)
-
-    # Simulate regime (in real scenario, fetch historical bars)
-    regime = Regime.BULL if np.random.random() < 0.35 else Regime.RANGE
-
-    signal = f"{sym}: ${price:.2f} | {regime.value}"
-
-    # Entry: Level 1
-    if qty == 0 and regime == Regime.BULL and np.random.random() < 0.15:
-        trade_qty = max(1, int((cash_per_symbol * 0.2) / price))
-
-        order = alpaca.place_order(sym, trade_qty, "buy")
-        if order:
-            state[sym] = {'qty': trade_qty, 'entry_price': price, 'entry_level': 1}
-            signal += f" | ✅ BUY_L1: {trade_qty}"
-            signals.append(f"✅ BUY_L1 {sym}: {trade_qty} @ ${price:.2f}")
-            print(f"  {signal}")
+    # Reconcile with the real Alpaca positions (source of truth)
+    held = {p['symbol']: p for p in alpaca.get_positions()}
+    for s in symbols:
+        if s in held:
+            st = state.get(s, {})
+            st.update(qty=int(float(held[s]['qty'])), avg=float(held[s]['avg_entry_price']))
+            st.setdefault('level', 1)
+            st.setdefault('l1', st['avg'])
+            state[s] = st
         else:
-            print(f"  ❌ {sym}: Order failed")
+            state.pop(s, None)
 
-    # Exit: Stop or TP
-    elif qty > 0:
-        if price < entry * 0.99:
-            pnl = (price - entry) * qty
-            pnl_pct = (pnl / (entry * qty)) * 100
+    bars = get_bars(symbols)
+    equity = float(acct.get('equity', 100000))
+    budget = (equity * 0.5) / len(symbols)
+    signals = []
 
-            order = alpaca.place_order(sym, qty, "sell")
-            if order:
-                signal += f" | 🛑 EXIT_STOP | PnL: {pnl_pct:+.2f}%"
-                signals.append(f"🛑 EXIT_STOP {sym}: {qty} @ ${price:.2f} | PnL: {pnl_pct:+.2f}%")
-                del state[sym]
-                print(f"  {signal}")
+    for sym in symbols:
+        closes = bars.get(sym, [])
+        price = get_price(sym) or (closes[-1] if closes else None)
+        if not price or len(closes) < 10:
+            print(f"⚠️  {sym}: insufficient data ({len(closes)} bars) - skipped")
+            continue
+        regime = detect_regime(np.array(closes, dtype=float))
+        pos = state.get(sym, {})
+        action, what = decide(pos, price, regime)
+        line = f"{sym}: ${price:.2f} | {regime.value}"
 
-        elif price > entry * 1.025:
-            pnl = (price - entry) * qty
-            pnl_pct = (pnl / (entry * qty)) * 100
+        if pos:
+            pos['peak'] = max(pos.get('peak', pos['avg']), price)
 
-            order = alpaca.place_order(sym, qty, "sell")
-            if order:
-                signal += f" | ✅ EXIT_TP | PnL: {pnl_pct:+.2f}%"
-                signals.append(f"✅ EXIT_TP {sym}: {qty} @ ${price:.2f} | PnL: {pnl_pct:+.2f}%")
-                del state[sym]
-                print(f"  {signal}")
+        if action == 'buy':
+            level = what
+            qty = int((budget * LEVEL_PCTS[level - 1]) / price)
+            if qty >= 1:
+                ok = dry or alpaca.place_order(sym, qty, "buy")
+                if ok:
+                    if level == 1:
+                        state[sym] = {'qty': qty, 'avg': price, 'level': 1, 'l1': price, 'peak': price}
+                    else:
+                        tot = pos['qty'] + qty
+                        pos.update(avg=(pos['avg'] * pos['qty'] + price * qty) / tot, qty=tot, level=level)
+                    signals.append(f"✅ BUY_L{level} {sym}: {qty} @ ${price:.2f}")
+                    line += f" | BUY_L{level} x{qty}"
+                else:
+                    line += " | ❌ order failed"
+        elif action == 'sell':
+            qty, avg = pos['qty'], pos['avg']
+            ok = dry or alpaca.place_order(sym, qty, "sell")
+            if ok:
+                pnl_pct = (price / avg - 1) * 100
+                icon = {'TP': '✅', 'TRAIL': '🔔', 'STOP': '🛑'}[what]
+                signals.append(f"{icon} EXIT_{what} {sym}: {qty} @ ${price:.2f} | PnL: {pnl_pct:+.2f}%")
+                line += f" | EXIT_{what} {pnl_pct:+.2f}%"
+                state.pop(sym, None)
+            else:
+                line += " | ❌ order failed"
+        print("  " + line)
 
-# Save state
-with open(state_file, 'w') as f:
-    json.dump(state, f, indent=2)
+    json.dump(state, open(state_file, 'w'), indent=2)
+    print("\n" + "=" * 70)
+    print(f"✅ Cycle completed: {len(signals)} signals | positions tracked: {len(state)}" + (" (DRY RUN)" if dry else ""))
+    if signals and not dry:
+        msg = "🟢 <b>1H Strategy Signals</b>\n\n" + "\n".join(signals[:10])
+        print("✅ Telegram notification sent" if send_telegram(msg) else "⚠️  Telegram notification failed")
+    print("=" * 70 + "\n")
 
-print("\n" + "=" * 70)
-print(f"✅ Cycle completed: {len(signals)} signals")
-print(f"📁 State saved | 📊 Positions: {len(state)}")
-
-# Send Telegram
-if signals:
-    msg = "🟢 <b>1H Strategy Signals</b>\n\n"
-    msg += "\n".join(signals[:10])
-    if send_telegram(msg):
-        print("✅ Telegram notification sent")
-    else:
-        print("⚠️  Telegram notification failed")
-
-print("=" * 70 + "\n")
+if __name__ == "__main__":
+    main()
