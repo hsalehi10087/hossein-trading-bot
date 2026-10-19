@@ -22,6 +22,7 @@ jobs:
       with:
         python-version: '3.11'
     - run: pip install requests
+    - run: scripts/datastore.sh pull
     - run: python monitor_10s.py
       env:
         ALPACA_ENDPOINT: ${{ secrets.ALPACA_ENDPOINT }}
@@ -31,8 +32,5 @@ jobs:
     - name: Commit logs
       if: always()
       run: |
-        git config user.email "action@github.com"
-        git config user.name "GitHub Action"
-        git add logs
-        git commit -m "monitor log $(date -u +%F_%H%M)" || exit 0
-        for i in 1 2 3; do git pull --rebase -q && git push -q && break || sleep 5; done
+        mkdir -p datastore/monitor && cp -r logs/. datastore/monitor/ 2>/dev/null || true
+        scripts/datastore.sh push "monitor log $(date -u +%F_%H%M)"

@@ -1,2 +1,7 @@
 config.txt
 __pycache__/
+datastore/
+__pycache__/
+*.pyc
+strategy_1h_live_state.json
+logs/

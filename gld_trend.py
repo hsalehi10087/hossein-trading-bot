@@ -1,30 +1,39 @@
-"""معامله‌ی آزمایشی (Alpaca paper) استراتژی روند طلا روی GLD.
+"""اجراکننده‌ی روزانه‌ی استراتژی روند طلا روی GLD (Alpaca paper).
 
-سیگنال از داده‌ی روزانه‌ی طلا (GC=F) — همان داده‌ای که بک‌تست شد:
-  ورود: بسته‌شدن بالای سقف ۴۰ روزه | خروج: بسته‌شدن زیر کف ۱۰ روزه یا حد ضرر شناور ۲×ATR(14)
-  اندازه: سهمیه‌ی ثابت (GLD_SLEEVE_USD، پیش‌فرض ۱۰٬۰۰۰ دلار) × min(1, 12٪ / نوسان ۲۰ روزه‌ی سالانه)
-فقط موقعیت GLD را مدیریت می‌کند و به معاملات دیگر حساب دست نمی‌زند.
-DRY_RUN=true → سفارشی ثبت نمی‌شود، فقط گزارش.
+جریان: داده → engine.decide (قوانین rules/gld_trend.yaml) → engine.risk → سفارش با client_order_id=decision_id
+→ ثبت همه‌چیز در دفتر حسابرسی SQLite (شاخه‌ی data) → گزارش فارسی با دلیل تصمیم به تلگرام.
+هیچ دستور لحظه‌ای انسانی وارد این مسیر نمی‌شود؛ تنها راه تغییر رفتار، تغییر فایل قوانین با Pull Request است.
+DRY_RUN=true → سفارش ثبت نمی‌شود. KILL_SWITCH=true (متغیر مخزن) → خرید جدید مسدود.
 """
-import csv
 import datetime as dt
-import math
 import os
 import sys
 
-import numpy as np
 import pandas as pd
 import requests
 import yfinance as yf
 
-import json as _json
-_P = _json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'gld_params.json'), encoding='utf-8'))
-N_ENTRY, M_EXIT, ATR_K, TARGET_VOL = int(_P['n_entry']), int(_P['m_exit']), float(_P['atr_k']), 0.12
-SLEEVE = float(os.getenv('GLD_SLEEVE_USD', '10000'))
+from engine import rules as R
+from engine.audit import Audit
+from engine.broker import AlpacaPaper
+from engine.decide import decide
+from engine.risk import checks
+
 DRY = os.getenv('DRY_RUN', 'false').lower() == 'true'
-BASE = (os.getenv('ALPACA_ENDPOINT') or 'https://paper-api.alpaca.markets/v2').rstrip('/')
-H = {'APCA-API-KEY-ID': os.getenv('ALPACA_KEY', ''), 'APCA-API-SECRET-KEY': os.getenv('ALPACA_SECRET', '')}
-LOG = os.path.join('data', 'gld_trend_log.csv')
+KILL = os.getenv('KILL_SWITCH', 'false').lower() == 'true'
+STORE = os.getenv('DATASTORE', 'datastore')
+ENDPOINT = (os.getenv('ALPACA_ENDPOINT') or 'https://paper-api.alpaca.markets/v2').rstrip('/')
+COMMIT = (os.getenv('GITHUB_SHA') or 'local')[:7]
+
+RULE_FA = {'entry_breakout': 'ورود — بسته‌شدن بالای سقف {n} روز قبل',
+           'exit_channel': 'خروج — بسته‌شدن زیر کف {m} روز قبل',
+           'exit_atr_stop': 'خروج — برخورد به حد ضرر شناور {k:g}×ATR',
+           'hold_in': 'ماندن در موقعیت — هیچ شرط خروجی برقرار نشد',
+           'hold_out': 'بیرون ماندن — شکست سقف {n} روزه رخ نداد'}
+CHECK_FA = {'symbol_allowed': 'نماد مجاز', 'paper_only': 'فقط حساب آزمایشی', 'kill_switch': 'کلید توقف',
+            'max_order_usd': 'سقف ارزش سفارش', 'max_position_usd': 'سقف ارزش موقعیت',
+            'max_orders_per_day': 'سقف سفارش روزانه', 'not_duplicate': 'سفارش تکراری نباشد',
+            'data_fresh': 'به‌روز بودن داده'}
 
 
 def flat(df):
@@ -33,40 +42,9 @@ def flat(df):
     return df[['High', 'Low', 'Close']].dropna()
 
 
-def atr(df, n=14):
-    tr = pd.concat([df.High - df.Low, (df.High - df.Close.shift()).abs(), (df.Low - df.Close.shift()).abs()], axis=1).max(axis=1)
-    return tr.ewm(alpha=1 / n, adjust=False).mean()
-
-
-def signal(df):
-    hi, lo, a = df.High.rolling(N_ENTRY).max().shift(), df.Low.rolling(M_EXIT).min().shift(), atr(df)
-    cur, peak = 0, 0.0
-    for c, h, l, av in zip(df.Close, hi, lo, a):
-        if cur == 0 and c > h:
-            cur, peak = 1, c
-        elif cur == 1:
-            peak = max(peak, c)
-            if c < l or c < peak - ATR_K * av:
-                cur = 0
-    return cur, peak, float(a.iloc[-1])
-
-
-def alpaca(method, path, **kw):
-    r = requests.request(method, BASE + path, headers=H, timeout=20, **kw)
-    return r
-
-
-def held_qty():
-    r = alpaca('GET', '/positions/GLD')
-    if r.status_code == 404:
-        return 0
-    r.raise_for_status()
-    return int(float(r.json()['qty']))
-
-
 def tg(text):
-    tok, chats = os.getenv('TELEGRAM_BOT_TOKEN', ''), [c.strip() for c in os.getenv('TELEGRAM_CHAT_ID', '').split(',') if c.strip()]
-    for c in chats:
+    tok = os.getenv('TELEGRAM_BOT_TOKEN', '')
+    for c in [c.strip() for c in os.getenv('TELEGRAM_CHAT_ID', '').split(',') if c.strip()]:
         try:
             requests.post(f'https://api.telegram.org/bot{tok}/sendMessage',
                           data={'chat_id': c, 'text': text, 'parse_mode': 'HTML'}, timeout=20)
@@ -74,53 +52,85 @@ def tg(text):
             print('telegram error', e, file=sys.stderr)
 
 
+def reconcile(audit, broker):
+    """وضعیت سفارش‌های باز قبلی را از بروکر می‌خواند و پرشدن‌ها را ثبت می‌کند."""
+    notes = []
+    for coid in audit.open_orders():
+        o = broker.order_by_client_id(coid)
+        if not o:
+            continue
+        q = float(o.get('filled_qty') or 0)
+        px = float(o['filled_avg_price']) if o.get('filled_avg_price') else None
+        audit.record_fill(coid, o['status'], q, px, o.get('filled_at'))
+        if o['status'] == 'filled':
+            notes.append(f"{'خرید' if o['side'] == 'buy' else 'فروش'} {q:g} واحد به قیمت {px:,.2f} پر شد")
+        elif o['status'] in ('canceled', 'expired', 'rejected'):
+            notes.append(f'سفارش {coid} وضعیت {o["status"]} گرفت')
+    return notes
+
+
 def main():
-    g = flat(yf.download('GC=F', start='2008-01-01', interval='1d', progress=False, auto_adjust=False))
-    gld = flat(yf.download('GLD', period='1mo', interval='1d', progress=False, auto_adjust=False))
-    sig, peak, a14 = signal(g)
-    r = g.Close.pct_change()
-    vol = float(r.tail(20).std() * math.sqrt(252))
-    size = min(1.0, TARGET_VOL / vol) if vol > 0 else 0.0
-    px = float(gld.Close.iloc[-1])
-    target = int(SLEEVE * sig * size // px)
-    cur = held_qty()
-    diff = target - cur
-    entry_lvl = float(g.High.tail(N_ENTRY).max())
-    exit_lvl = float(g.Low.tail(M_EXIT).min())
-    stop_lvl = peak - ATR_K * a14 if sig else None
+    rules = R.load()
+    sym = rules['trade_symbol']
+    audit = Audit(os.path.join(STORE, 'gld', 'audit.sqlite'))
+    broker = AlpacaPaper(ENDPOINT, os.getenv('ALPACA_KEY', ''), os.getenv('ALPACA_SECRET', ''))
+    fills = reconcile(audit, broker)
 
-    action, order_note = 'بدون تغییر', ''
-    need = (target == 0 and cur > 0) or (target > 0 and abs(diff) >= max(1, math.ceil(0.15 * target)))
-    if need and diff != 0:
-        side = 'buy' if diff > 0 else 'sell'
-        action = f"{'خرید' if side == 'buy' else 'فروش'} {abs(diff)} واحد GLD"
-        if DRY:
-            order_note = ' (آزمایشی خشک: سفارش ثبت نشد)'
-        else:
-            o = alpaca('POST', '/orders', json={'symbol': 'GLD', 'qty': str(abs(diff)), 'side': side,
-                                                'type': 'market', 'time_in_force': 'day'})
-            order_note = ' ✅ سفارش ثبت شد' if o.status_code in (200, 201) else f' ❌ خطای سفارش: {o.status_code} {o.text[:120]}'
+    gold = flat(yf.download(rules['signal_symbol'], start='2008-01-01', interval='1d', progress=False,
+                            auto_adjust=False))
+    px = float(flat(yf.download(sym, period='1mo', interval='1d', progress=False, auto_adjust=False)).Close.iloc[-1])
+    pos = broker.position(sym)
+    held = int(float(pos['qty'])) if pos else 0
 
-    day = str(g.index[-1].date())
-    lines = [f'<b>🥇 استراتژی روند طلا (حساب آزمایشی)</b> — {day}',
-             f"طلا: <b>{g.Close.iloc[-1]:,.1f}</b> | GLD: {px:,.2f}",
-             f"سیگنال: <b>{'در بازار ✅' if sig else 'بیرون از بازار ⏸'}</b>",
-             f"ورود اگر بسته‌شدن بالای <b>{entry_lvl:,.1f}</b> (سقف {N_ENTRY} روزه)" if not sig else
-             f"خروج اگر بسته‌شدن زیر <b>{max(exit_lvl, stop_lvl):,.1f}</b> (کف {M_EXIT} روزه یا حد ضرر {ATR_K:g}×ATR)",
-             f"اندازه‌ی موقعیت: {size * 100:.0f}٪ از سهمیه‌ی {SLEEVE:,.0f} دلار (نوسان ۲۰ روزه {vol * 100:.1f}٪)",
-             f"GLD در حساب: {cur} واحد → هدف: {target} واحد",
-             f"اقدام: <b>{action}</b>{order_note}",
-             '<i>اجرای سفارش در بازگشایی بعدی بازار آمریکا. این حساب آزمایشی است.</i>']
-    tg('\n'.join(lines))
-    os.makedirs('data', exist_ok=True)
-    new = not os.path.exists(LOG)
-    with open(LOG, 'a', newline='', encoding='utf-8') as f:
-        w = csv.writer(f)
-        if new:
-            w.writerow(['run_utc', 'data_date', 'gold_close', 'gld_price', 'signal', 'size', 'held', 'target', 'action', 'dry'])
-        w.writerow([dt.datetime.utcnow().isoformat(timespec='seconds'), day, round(float(g.Close.iloc[-1]), 2), round(px, 2),
-                    sig, round(size, 3), cur, target, action + order_note, DRY])
-    print('\n'.join(lines))
+    d = decide(rules, gold, px, held, COMMIT, DRY)
+    base_id = d['decision_id']
+    d['decision_id'] = audit.unique_id(base_id)
+    risk = checks(rules, d, dt.date.today(), audit.orders_on(d['data_date'], d['strategy']),
+                  audit.has_order(base_id), KILL, ENDPOINT)
+    failed = [c for c in risk if not c['passed']]
+
+    if d['action'] == 'none':
+        outcome, note = 'no_action', ''
+    elif failed:
+        outcome = 'blocked:' + ','.join(c['name'] for c in failed)
+        note = ' ⛔ مسدود شد: ' + '، '.join(CHECK_FA.get(c['name'], c['name']) for c in failed)
+    elif DRY:
+        outcome, note = 'dry_run', ' (آزمایشی خشک: سفارش ثبت نشد)'
+    else:
+        ok, bid, resp = broker.submit(sym, d['action'], d['qty'], base_id)
+        outcome = 'submitted' if ok else 'rejected'
+        audit.record_order(base_id, d['decision_id'], sym, d['action'], d['qty'],
+                           'submitted' if ok else f'rejected {resp[:60]}', bid, resp)
+        note = ' ✅ سفارش ثبت شد' if ok else f' ❌ بروکر رد کرد: {resp[:100]}'
+    audit.record_decision(d, risk, outcome)
+
+    acct = broker.account()
+    pos = broker.position(sym)
+    upl = float(pos['unrealized_pl']) if pos else 0.0
+    rpl = audit.realized_pl(sym)
+    audit.snapshot((sym, float(pos['qty']), float(pos['avg_entry_price']), float(pos['market_value']), upl)
+                   if pos else None, acct, upl, rpl)
+    audit.export_csv(os.path.join(STORE, 'gld', 'decisions.csv'))
+
+    x, p = d['reason'], rules['params']
+    act = {'buy': f"خرید {d['qty']} واحد {sym}", 'sell': f"فروش {d['qty']} واحد {sym}"}.get(d['action'], 'بدون تغییر')
+    level = (f"ورود فردا اگر بسته‌شدن بالای <b>{x['next_entry_level']:,.1f}</b>" if not d['signal'] else
+             f"خروج فردا اگر بسته‌شدن زیر <b>{max(x['next_exit_level'], x['stop_level_today'] or 0):,.1f}</b>")
+    lines = [f'<b>🥇 روند طلا — حساب آزمایشی</b> — {d["data_date"]}',
+             f"طلا: <b>{x['close']:,.1f}</b> | {sym}: {x['gld_price']:,.2f}",
+             f"وضعیت: <b>{'در بازار ✅' if d['signal'] else 'بیرون از بازار ⏸'}</b>",
+             f"دلیل: {RULE_FA[x['rule']].format(n=p['n_entry'], m=p['m_exit'], k=float(p['atr_k']))}",
+             level,
+             f"اندازه: {x['size_frac'] * 100:.0f}٪ سهمیه (نوسان سالانه {x['vol_annual'] * 100:.1f}٪) → هدف "
+             f"{x['target_qty']} واحد، در حساب {x['held_qty']}",
+             f'اقدام: <b>{act}</b>{note}']
+    if fills:
+        lines.append('پرشدن‌ها: ' + ' | '.join(fills))
+    lines += [f"سود/زیان سهمیه: باز {upl:+,.0f}$ | بسته‌شده {rpl:+,.0f}$",
+              f"<i>قانون نسخه‌ی {d['rule_version']} | کد {COMMIT} | شناسه {d['decision_id']}</i>"]
+    msg = '\n'.join(lines)
+    print(msg)
+    tg(msg)
 
 
 if __name__ == '__main__':
