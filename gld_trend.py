@@ -44,7 +44,7 @@ def flat(df):
 
 def tg(text):
     tok = os.getenv('TELEGRAM_BOT_TOKEN', '')
-    for c in [c.strip() for c in os.getenv('TELEGRAM_CHAT_ID', '').split(',') if c.strip()]:
+    for c in [c.strip() for c in os.getenv('TELEGRAM_CHAT_ID', '').split(',') if c.strip() and c.strip() != 'none']:
         try:
             requests.post(f'https://api.telegram.org/bot{tok}/sendMessage',
                           data={'chat_id': c, 'text': text, 'parse_mode': 'HTML'}, timeout=20)
