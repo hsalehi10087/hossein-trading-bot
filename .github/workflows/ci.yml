@@ -1,0 +1,21 @@
+name: ✅ CI (rules + engine tests)
+
+on:
+  pull_request:
+  push:
+    branches-ignore: [data]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -q pandas numpy requests pyyaml pytest
+      - name: Validate rules file
+        run: python -c "from engine import rules; r = rules.load(); print('rules OK, version', r['version'], r['params'])"
+      - name: Unit tests (schema, no look-ahead, golden, risk, audit)
+        run: python -m pytest -q tests

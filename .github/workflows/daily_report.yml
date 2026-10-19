@@ -15,6 +15,9 @@ on:
         required: false
         default: '75439320'
 
+permissions:
+  contents: write
+
 jobs:
   send_report:
     runs-on: ubuntu-latest
@@ -49,30 +52,16 @@ jobs:
         TELEGRAM_CHAT_ID=${{ github.event.inputs.chat_id || secrets.TELEGRAM_CHAT_ID }}
         EOF
 
-    - name: Load latest state
+    - name: Load latest state (data branch)
       run: |
-        git fetch origin
-        git checkout origin/main -- strategy_1h_live_state.json 2>/dev/null || true
-        # Ensure the state file exists with empty initial state
-        if [ ! -f strategy_1h_live_state.json ]; then
-          echo '{}' > strategy_1h_live_state.json
-        fi
+        scripts/datastore.sh pull
+        cp datastore/strategy_1h/live_state.json strategy_1h_live_state.json 2>/dev/null || echo '{}' > strategy_1h_live_state.json
 
     - name: Send Daily Report
       run: python portfolio_report.py
 
-    - name: Save updated state
+    - name: Save updated state (data branch)
       if: always()
       run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        # Only add and commit if the file exists and has changes
-        if [ -f strategy_1h_live_state.json ] && git diff --quiet strategy_1h_live_state.json; then
-          echo "No changes to state file"
-        elif [ -f strategy_1h_live_state.json ]; then
-          git add strategy_1h_live_state.json
-          git commit -m "Daily report: $(date)" || true
-          git push || true
-        else
-          echo "State file does not exist, skipping save"
-        fi
+        mkdir -p datastore/strategy_1h && cp strategy_1h_live_state.json datastore/strategy_1h/live_state.json
+        scripts/datastore.sh push "Daily report state $(date -u +%F)" || true

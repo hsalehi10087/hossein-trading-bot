@@ -1,0 +1,28 @@
+# قوانین استراتژی روند طلا — تنها منبع پارامترها.
+# هر تغییری فقط با Pull Request و merge به main اعمال می‌شود؛ با هر تغییر، version یکی بالا می‌رود.
+strategy: gld_trend
+version: 1
+approved: '2026-10-19'
+stage: paper            # paper | live — فعلاً فقط paper مجاز است
+signal_symbol: GC=F     # سیگنال از طلای آتی روزانه (همان داده‌ی بک‌تست)
+trade_symbol: GLD       # معامله روی ETF طلا
+
+params:
+  n_entry: 40           # ورود: بسته‌شدن بالای سقف n روز قبل
+  m_exit: 10            # خروج: بسته‌شدن زیر کف m روز قبل
+  atr_k: 2.0            # حد ضرر شناور: سقف بسته‌شدن‌ها منهای k×ATR (0 = غیرفعال)
+  atr_n: 14
+  vol_window: 20
+  target_vol: 0.12      # اندازه = min(1, target_vol / نوسان سالانه)
+
+sizing:
+  sleeve_usd: 10000     # سهمیه‌ی ثابت این استراتژی از حساب
+  rebalance_min_frac: 0.15   # تغییر اندازه فقط اگر اختلاف ≥ ۱۵٪ هدف باشد
+
+risk:
+  allowed_symbols: [GLD]
+  max_position_usd: 11000
+  max_order_usd: 11000
+  max_orders_per_day: 1
+  max_data_age_days: 4
+  kill_switch: false     # true = هیچ خرید جدیدی ثبت نمی‌شود (فروش برای کاهش ریسک مجاز است)

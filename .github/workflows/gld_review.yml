@@ -11,7 +11,8 @@ on:
         default: 'false'
 
 permissions:
-  contents: write
+  contents: write       # push شاخه‌ی پیشنهاد و شاخه‌ی data
+  pull-requests: write  # باز کردن PR پیشنهاد؛ اعمال فقط با merge کاربر
 
 jobs:
   review:
@@ -22,21 +23,18 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: pip install -q yfinance pandas numpy requests
+      - run: pip install -q yfinance pandas numpy requests pyyaml
+      - run: scripts/datastore.sh pull
       - name: Review
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          GITHUB_TOKEN: ${{ github.token }}
           FORCE: ${{ github.event.inputs.force || 'false' }}
         run: |
           echo "::add-mask::$TELEGRAM_BOT_TOKEN"
+          git config user.email "action@github.com"; git config user.name "GLD Review Bot"
           python3 gld_review.py
-      - name: Save state
+      - name: Save state to data branch
         if: always()
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GLD Review Bot"
-          git add -f data/gld_param_review.json || true
-          git diff --cached --quiet && exit 0
-          git commit -q -m "🥇 gld param review $(date +%Y-%m-%d)"
-          for i in 1 2 3 4 5; do git pull --rebase -q && git push -q && break; sleep 10; done
+        run: scripts/datastore.sh push "🥇 gld param review $(date -u +%F)"

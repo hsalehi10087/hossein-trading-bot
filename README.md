@@ -300,3 +300,23 @@ Long calls only (max loss = premium). Entry: BULL 1H regime + price above 20-day
 - **Market filter:** SPY hourly regime BEAR -> no new buys (stocks or options). Exits always stay active.
 - **Daily loss brake:** equity down >3% vs previous close -> no new buys.
 - **Volatility-scaled sizing:** budget x clip(0.4% / hourly vol, 0.5, 1.25) per symbol.
+
+## 🥇 ربات قاعده‌محور روند طلا (GLD — Alpaca paper)
+
+اصل بنیادی: **هیچ دستور لحظه‌ای مستقیماً به خرید یا فروش تبدیل نمی‌شود.** ربات فقط با قوانین تأییدشده تصمیم می‌گیرد و
+قوانین فقط با Pull Request و merge به `main` تغییر می‌کنند.
+
+| بخش | فایل |
+|---|---|
+| قوانین (تنها منبع پارامترها، با version) | `rules/gld_trend.yaml` |
+| موتور تصمیم خالص → شیء Decision با دلیل | `engine/decide.py` |
+| چک‌های ریسک (نماد مجاز، فقط paper، کلید توقف، سقف‌ها، تکراری، تازگی داده) | `engine/risk.py` |
+| دفتر حسابرسی SQLite (decision, risk_check, order, fill, position, pnl_snapshot) | `engine/audit.py` → شاخه‌ی `data`: `gld/audit.sqlite` |
+| بروکر (فقط آدرس paper پذیرفته می‌شود) | `engine/broker.py` |
+| اجرای روزانه ۲۱:۳۰ UTC | `gld_trend.py`, `.github/workflows/gld_trend.yml` |
+| بازبینی walk-forward هر ۳ هفته → **PR پیشنهادی** | `gld_review.py`, `.github/workflows/gld_review.yml` |
+| آزمون‌ها (اسکیما، نبودِ نگاه به آینده، golden، ریسک، حسابرسی) | `tests/`, `.github/workflows/ci.yml` |
+
+- `client_order_id = decision_id` (مثلاً `gld_trend-v1-2026-10-20`) ← اجرای دوباره در یک روز سفارش تکراری نمی‌سازد.
+- کلید توقف اضطراری: متغیر مخزن `KILL_SWITCH=true` (Settings → Variables) خرید جدید را مسدود می‌کند؛ هیچ معامله‌ای نمی‌سازد.
+- همه‌ی لاگ‌ها و وضعیت ربات‌ها روی شاخه‌ی `data` ذخیره می‌شوند تا `main` قابل محافظت باشد.
