@@ -1,6 +1,6 @@
 {
  "last_review": "2026-10-19",
- "status": "pending_approval",
+ "status": "pr_opened",
  "current": {
   "key": [
    40,
@@ -37,12 +37,22 @@
    "sharpe": -0.18,
    "max_dd": -12.79,
    "trades": 2
-  }
+  },
+  "pr": "https://github.com/hsalehi10087/hossein-trading-bot/compare/main...gld-review/2026-10-19?expand=1"
  },
  "history": [
   {
    "date": "2026-10-19",
    "status": "pending_approval",
+   "candidate": [
+    40,
+    20,
+    0.0
+   ]
+  },
+  {
+   "date": "2026-10-19",
+   "status": "pr_opened",
    "candidate": [
     40,
     20,
