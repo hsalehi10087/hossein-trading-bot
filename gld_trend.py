@@ -17,7 +17,9 @@ import pandas as pd
 import requests
 import yfinance as yf
 
-N_ENTRY, M_EXIT, ATR_K, TARGET_VOL = 40, 10, 2.0, 0.12
+import json as _json
+_P = _json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'gld_params.json'), encoding='utf-8'))
+N_ENTRY, M_EXIT, ATR_K, TARGET_VOL = int(_P['n_entry']), int(_P['m_exit']), float(_P['atr_k']), 0.12
 SLEEVE = float(os.getenv('GLD_SLEEVE_USD', '10000'))
 DRY = os.getenv('DRY_RUN', 'false').lower() == 'true'
 BASE = (os.getenv('ALPACA_ENDPOINT') or 'https://paper-api.alpaca.markets/v2').rstrip('/')
@@ -103,8 +105,8 @@ def main():
     lines = [f'<b>🥇 استراتژی روند طلا (حساب آزمایشی)</b> — {day}',
              f"طلا: <b>{g.Close.iloc[-1]:,.1f}</b> | GLD: {px:,.2f}",
              f"سیگنال: <b>{'در بازار ✅' if sig else 'بیرون از بازار ⏸'}</b>",
-             f"ورود اگر بسته‌شدن بالای <b>{entry_lvl:,.1f}</b> (سقف ۴۰ روزه)" if not sig else
-             f"خروج اگر بسته‌شدن زیر <b>{max(exit_lvl, stop_lvl):,.1f}</b> (کف ۱۰ روزه یا حد ضرر ATR)",
+             f"ورود اگر بسته‌شدن بالای <b>{entry_lvl:,.1f}</b> (سقف {N_ENTRY} روزه)" if not sig else
+             f"خروج اگر بسته‌شدن زیر <b>{max(exit_lvl, stop_lvl):,.1f}</b> (کف {M_EXIT} روزه یا حد ضرر {ATR_K:g}×ATR)",
              f"اندازه‌ی موقعیت: {size * 100:.0f}٪ از سهمیه‌ی {SLEEVE:,.0f} دلار (نوسان ۲۰ روزه {vol * 100:.1f}٪)",
              f"GLD در حساب: {cur} واحد → هدف: {target} واحد",
              f"اقدام: <b>{action}</b>{order_note}",

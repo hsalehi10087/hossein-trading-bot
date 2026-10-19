@@ -1,0 +1,42 @@
+name: 🥇 Gold params review (every 3 weeks)
+
+on:
+  schedule:
+    - cron: '0 6 * * 6'  # هر شنبه بررسی می‌شود؛ فقط اگر ۲۱ روز از بازبینی قبلی گذشته باشد اجرا می‌شود
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'true = همین حالا بازبینی کن'
+        required: false
+        default: 'false'
+
+permissions:
+  contents: write
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -q yfinance pandas numpy requests
+      - name: Review
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          FORCE: ${{ github.event.inputs.force || 'false' }}
+        run: |
+          echo "::add-mask::$TELEGRAM_BOT_TOKEN"
+          python3 gld_review.py
+      - name: Save state
+        if: always()
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GLD Review Bot"
+          git add -f data/gld_param_review.json || true
+          git diff --cached --quiet && exit 0
+          git commit -q -m "🥇 gld param review $(date +%Y-%m-%d)"
+          for i in 1 2 3 4 5; do git pull --rebase -q && git push -q && break; sleep 10; done
