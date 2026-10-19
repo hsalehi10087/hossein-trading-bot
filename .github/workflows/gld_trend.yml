@@ -1,0 +1,49 @@
+name: 🥇 Gold trend (GLD paper)
+
+on:
+  schedule:
+    - cron: '30 21 * * 1-5'  # بعد از بسته‌شدن روزانه‌ی طلا؛ سفارش در بازگشایی بعدی آمریکا اجرا می‌شود
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'true = بدون ثبت سفارش'
+        required: false
+        default: 'false'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gld_trend
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -q yfinance pandas numpy requests
+      - name: Run strategy
+        env:
+          ALPACA_KEY: ${{ secrets.ALPACA_KEY }}
+          ALPACA_SECRET: ${{ secrets.ALPACA_SECRET }}
+          ALPACA_ENDPOINT: ${{ secrets.ALPACA_ENDPOINT }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
+        run: |
+          echo "::add-mask::$TELEGRAM_BOT_TOKEN"
+          python3 gld_trend.py
+      - name: Save log
+        if: always()
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GLD Trend Bot"
+          git add -f data/gld_trend_log.csv || true
+          git diff --cached --quiet && exit 0
+          git commit -q -m "🥇 gld trend log $(date +%Y-%m-%d)"
+          for i in 1 2 3 4 5; do git pull --rebase -q && git push -q && break; sleep 10; done
