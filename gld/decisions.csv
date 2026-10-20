@@ -1,2 +1,3 @@
 decision_id,ts_utc,rule_version,code_commit,data_date,signal,action,qty,dry_run,outcome,rule,close,target_qty
 gld_trend-v1-2026-10-19,2026-10-19T17:39:02,1,54aa464,2026-10-19,0,none,0,0,no_action,hold_out,4160.3,0
+gld_trend-v1-2026-10-19-rerun2,2026-10-20T00:29:36,1,54aa464,2026-10-19,0,none,0,0,no_action,hold_out,4152.5,0
