@@ -1,0 +1,2 @@
+decision_id,ts_utc,rule_version,code_commit,data_date,signal,action,qty,dry_run,outcome,rule,close,target_qty
+qqq_trend-v1-2026-10-20-dry,2026-10-20T19:16:01,1,38bbf6c,2026-10-20,1,rebalance,27,1,dry_run,hold_risk,718.04,
