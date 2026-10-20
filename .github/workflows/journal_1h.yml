@@ -1,0 +1,29 @@
+name: 📒 1H signal journal (read-only)
+
+on:
+  schedule:
+    - cron: '20 21 * * 1-5'  # بعد از بسته‌شدن بازار آمریکا
+  workflow_dispatch:
+
+permissions:
+  contents: write   # فقط push به شاخه‌ی data
+
+jobs:
+  journal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -q requests
+      - run: scripts/datastore.sh pull
+      - name: Build journal (no orders, no Telegram)
+        env:
+          ALPACA_KEY: ${{ secrets.ALPACA_KEY }}
+          ALPACA_SECRET: ${{ secrets.ALPACA_SECRET }}
+          ALPACA_ENDPOINT: ${{ secrets.ALPACA_ENDPOINT }}
+        run: python3 journal_1h.py
+      - if: always()
+        run: scripts/datastore.sh push "📒 1H journal $(date -u +%F_%H%M)"
