@@ -1,0 +1,24 @@
+# قوانین استراتژی «هسته با فیلتر روند» — تنها منبع پارامترها؛ تغییر فقط با Pull Request و version+1.
+# بک‌تست ۲۰۰۷–۲۰۲۶: بازده سالانه ۱۲٫۴٪، بیشترین ریزش ۲۹٪ (QQQ ساده: ۱۶٫۱٪ و ۵۲٪)، حدود ۲ تعویض در سال.
+strategy: qqq_trend
+version: 1
+approved: '2026-10-20'
+stage: paper
+risk_asset: QQQ          # در روند صعودی
+safe_asset: IEF          # در روند نزولی (اوراق خزانه‌ی ۷ تا ۱۰ ساله)
+
+params:
+  sma_n: 200             # میانگین متحرک روزانه‌ی QQQ
+  band: 0.02             # ورود: بالای میانگین × (۱+band)؛ خروج: زیر میانگین × (۱−band)
+
+sizing:
+  sleeve_usd: 20000
+  rebalance_min_frac: 0.15
+
+risk:
+  allowed_symbols: [QQQ, IEF]
+  max_position_usd: 22000
+  max_order_usd: 22000
+  max_orders_per_day: 2   # تعویض = یک فروش + یک خرید
+  max_data_age_days: 4
+  kill_switch: false
