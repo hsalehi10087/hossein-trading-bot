@@ -1,0 +1,32 @@
+name: 🧹 Close positions (manual, paper)
+
+on:
+  workflow_dispatch:
+    inputs:
+      symbols:
+        description: 'نمادها با کاما'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  close:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -q requests
+      - run: scripts/datastore.sh pull
+      - name: Close
+        env:
+          ALPACA_KEY: ${{ secrets.ALPACA_KEY }}
+          ALPACA_SECRET: ${{ secrets.ALPACA_SECRET }}
+          ALPACA_ENDPOINT: ${{ secrets.ALPACA_ENDPOINT }}
+          SYMBOLS: ${{ github.event.inputs.symbols }}
+        run: python3 close_positions.py
+      - if: always()
+        run: scripts/datastore.sh push "🧹 closed positions $(date -u +%F_%H%M)"
