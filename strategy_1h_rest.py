@@ -172,6 +172,9 @@ def decide(pos, price, regime):
 TARGET_HOURLY_VOL = 0.004                # position size is scaled so each name carries similar risk
 SCALE_MIN, SCALE_MAX = 0.5, 1.25
 DAILY_LOSS_BRAKE = 0.03                  # no new buys if equity is down >3% vs previous close
+# 2026-10-20: new buys (stocks AND options) paused by the user; exits/stops keep managing open positions.
+# Re-enabling requires a PR that flips this flag.
+NEW_BUYS_ENABLED = False
 
 def size_scale(closes, n=30):
     """Volatile names get a smaller budget, calm names a slightly larger one."""
@@ -268,6 +271,8 @@ def main():
     spy = bars.pop('SPY', [])
     market = detect_regime(np.array(spy, dtype=float)) if len(spy) >= 10 else Regime.RANGE
     pause = risk_off(acct, market)
+    if not NEW_BUYS_ENABLED:
+        pause = "new buys disabled by rules (NEW_BUYS_ENABLED=False)"
     print(f"Market (SPY): {market.value}" + (f" | ⛔ new buys paused: {pause}" if pause else ""))
     equity = float(acct.get('equity', 100000))
     budget = (equity * 0.5) / len(symbols)
