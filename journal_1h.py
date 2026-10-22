@@ -13,10 +13,12 @@ import os
 
 import requests
 
+from engine import conductor as PC
+
 BASE = (os.getenv('ALPACA_ENDPOINT') or 'https://paper-api.alpaca.markets/v2').rstrip('/')
 H = {'APCA-API-KEY-ID': os.getenv('ALPACA_KEY', ''), 'APCA-API-SECRET-KEY': os.getenv('ALPACA_SECRET', '')}
 OUT = os.path.join(os.getenv('DATASTORE', 'datastore'), 'strategy_1h', 'journal.csv')
-EXCLUDE = {'GLD'}
+PORT = PC.load()  # فقط نمادهای ربات قدیمی؛ GLD/QQQ/IEF مال ربات‌های دیگرند
 TEH = dt.timezone(dt.timedelta(hours=3, minutes=30))
 
 
@@ -45,7 +47,7 @@ def all_filled_orders(days=120):
 
 
 def main():
-    orders = [o for o in all_filled_orders() if o['symbol'] not in EXCLUDE]
+    orders = [o for o in all_filled_orders() if PC.owner_of(PORT, o['symbol']) in ('legacy_1h', None)]
     pos = {p['symbol']: float(p['current_price']) for p in get('/positions')}
     lots = collections.defaultdict(list)  # symbol -> [row]
     rows = []

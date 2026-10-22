@@ -1,8 +1,7 @@
 name: 🥇 Gold trend (GLD paper)
 
 on:
-  schedule:
-    - cron: '30 21 * * 1-5'  # بعد از بسته‌شدن روزانه‌ی طلا؛ سفارش در بازگشایی بعدی آمریکا اجرا می‌شود
+  # زمان‌بندی به portfolio.yml (هماهنگ‌کننده) منتقل شد؛ این فقط برای اجرای دستی است
   workflow_dispatch:
     inputs:
       dry_run:

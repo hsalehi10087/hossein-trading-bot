@@ -15,6 +15,7 @@ import yfinance as yf
 from engine import core_trend as C
 from engine.audit import Audit
 from engine.broker import AlpacaPaper
+from engine import data as D
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 DRY = os.getenv('DRY_RUN', 'false').lower() == 'true'
@@ -49,7 +50,7 @@ def tg(text):
             print('telegram error', e, file=sys.stderr)
 
 
-def main():
+def main(conductor=None, session=None, notify=True):
     rules = C.load(os.path.join(ROOT, 'rules', 'qqq_trend.yaml'))
     ra, sa = rules['risk_asset'], rules['safe_asset']
     audit = Audit(os.path.join(STORE, 'qqq', 'audit.sqlite'))
@@ -62,8 +63,19 @@ def main():
             audit.record_fill(coid, o['status'], float(o.get('filled_qty') or 0),
                               float(o['filled_avg_price']) if o.get('filled_avg_price') else None, o.get('filled_at'))
 
-    close = last_close(ra, start='2005-01-01')
-    prices = {ra: float(close.iloc[-1]), sa: float(last_close(sa, period='1mo').iloc[-1])}
+    try:  # داده‌ی رسمی Alpaca (تعدیل‌شده)؛ اگر نشد Yahoo
+        px_df = D.daily_closes([ra, sa], start='2005-01-01')
+        close, safe_px, src = px_df[ra].dropna(), float(px_df[sa].dropna().iloc[-1]), 'Alpaca'
+    except Exception as e:
+        print('alpaca data failed, using Yahoo:', e, file=sys.stderr)
+        close, safe_px, src = last_close(ra, start='2005-01-01'), float(last_close(sa, period='1mo').iloc[-1]), 'Yahoo'
+    if session and close.index[-1].date() < session:
+        msg = f'📈 هسته‌ی QQQ: داده برای {session} هنوز نرسیده (آخرین: {close.index[-1].date()})؛ امروز تصمیمی گرفته نشد.'
+        print(msg)
+        if notify:
+            tg(msg)
+        return {'sleeve': 'qqq_trend', 'stale': True, 'lines': [msg]}
+    prices = {ra: float(close.iloc[-1]), sa: safe_px}
     held = {}
     for s in (ra, sa):
         p = broker.position(s)
@@ -82,6 +94,14 @@ def main():
         risk_all += [dict(c, name=f'{o["symbol"]}:{c["name"]}') for c in rc]
         bad = [c for c in rc if not c['passed']]
         label = f"{'خرید' if o['side'] == 'buy' else 'فروش'} {o['qty']} واحد {o['symbol']}"
+        if not bad and conductor is not None:
+            q, pc = conductor.approve('qqq_trend', o)
+            risk_all += [dict(c, name=f'{o["symbol"]}:{c["name"]}') for c in pc]
+            if q == 0:
+                bad = [c for c in pc if not c['passed']]
+            elif q < o['qty']:
+                o['qty'] = q
+                label += f' (کوچک‌شده به {q})'
         if bad:
             outcomes.append('blocked')
             notes.append(f'{label} ⛔ مسدود: ' + '، '.join(CHECK_FA.get(c['name'], c['name']) for c in bad))
@@ -119,10 +139,14 @@ def main():
              f"هدف: {x['target'][ra]} واحد {ra} و {x['target'][sa]} واحد {sa} | در حساب: {held[ra]} و {held[sa]}",
              'اقدام: ' + (' | '.join(notes) if notes else '<b>بدون تغییر</b>'),
              f'سود/زیان سهمیه: باز {upl:+,.0f}$ | بسته‌شده {rpl:+,.0f}$',
-             f"<i>قانون نسخه‌ی {d['rule_version']} | کد {COMMIT} | شناسه {d['decision_id']}</i>"]
+             f"<i>قانون نسخه‌ی {d['rule_version']} | داده: {src} | کد {COMMIT} | شناسه {d['decision_id']}</i>"]
     msg = '\n'.join(lines)
     print(msg)
-    tg(msg)
+    if notify:
+        tg(msg)
+    val = sum(float(p['market_value']) for p in (broker.position(ra), broker.position(sa)) if p)
+    return {'sleeve': 'qqq_trend', 'stale': False, 'lines': lines, 'signal': d['signal'],
+            'action': ' | '.join(notes) if notes else 'بدون تغییر', 'upl': upl, 'rpl': rpl, 'value': val}
 
 
 if __name__ == '__main__':
