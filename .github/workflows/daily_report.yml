@@ -1,9 +1,7 @@
 name: Daily Portfolio Report
 
 on:
-  schedule:
-    # ہر روز ساعت 4:30 PM ET (20:30 UTC) = 00:00 Tehran (فردا)
-    - cron: '30 20 * * 1-5'  # Mon-Fri, 4:30 PM ET
+  # زمان‌بندی حذف شد (۲۰۲۶-۱۰-۲۲): گزارش یکجای هماهنگ‌کننده (portfolio.yml) جایگزینش شد؛ فقط اجرای دستی
   workflow_dispatch:  # Manual trigger
     inputs:
       token:
