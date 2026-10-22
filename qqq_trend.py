@@ -69,6 +69,8 @@ def main(conductor=None, session=None, notify=True):
     except Exception as e:
         print('alpaca data failed, using Yahoo:', e, file=sys.stderr)
         close, safe_px, src = last_close(ra, start='2005-01-01'), float(last_close(sa, period='1mo').iloc[-1]), 'Yahoo'
+    if session:
+        close = close[close.index.date <= session]
     if session and close.index[-1].date() < session:
         msg = f'📈 هسته‌ی QQQ: داده برای {session} هنوز نرسیده (آخرین: {close.index[-1].date()})؛ امروز تصمیمی گرفته نشد.'
         print(msg)

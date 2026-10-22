@@ -78,6 +78,8 @@ def main(conductor=None, session=None, notify=True):
 
     gold = flat(yf.download(rules['signal_symbol'], start='2008-01-01', interval='1d', progress=False,
                             auto_adjust=False))
+    if session:  # کندل‌های بعد از آخرین جلسه‌ی بسته‌شده (معاملات شبانه‌ی طلا) نیمه‌کاره‌اند؛ کنار گذاشته می‌شوند
+        gold = gold[gold.index.date <= session]
     if session and gold.index[-1].date() < session:
         msg = f'🥇 روند طلا: داده‌ی طلا برای {session} هنوز نرسیده (آخرین: {gold.index[-1].date()})؛ امروز تصمیمی گرفته نشد.'
         print(msg)
