@@ -69,7 +69,7 @@ def reconcile(audit, broker):
     return notes
 
 
-def main():
+def main(conductor=None, session=None, notify=True):
     rules = R.load()
     sym = rules['trade_symbol']
     audit = Audit(os.path.join(STORE, 'gld', 'audit.sqlite'))
@@ -78,6 +78,12 @@ def main():
 
     gold = flat(yf.download(rules['signal_symbol'], start='2008-01-01', interval='1d', progress=False,
                             auto_adjust=False))
+    if session and gold.index[-1].date() < session:
+        msg = f'🥇 روند طلا: داده‌ی طلا برای {session} هنوز نرسیده (آخرین: {gold.index[-1].date()})؛ امروز تصمیمی گرفته نشد.'
+        print(msg)
+        if notify:
+            tg(msg)
+        return {'sleeve': 'gld_trend', 'stale': True, 'lines': [msg]}
     px = float(flat(yf.download(sym, period='1mo', interval='1d', progress=False, auto_adjust=False)).Close.iloc[-1])
     pos = broker.position(sym)
     held = int(float(pos['qty'])) if pos else 0
@@ -94,14 +100,25 @@ def main():
     elif failed:
         outcome = 'blocked:' + ','.join(c['name'] for c in failed)
         note = ' ⛔ مسدود شد: ' + '، '.join(CHECK_FA.get(c['name'], c['name']) for c in failed)
-    elif DRY:
-        outcome, note = 'dry_run', ' (آزمایشی خشک: سفارش ثبت نشد)'
     else:
-        ok, bid, resp = broker.submit(sym, d['action'], d['qty'], base_id)
-        outcome = 'submitted' if ok else 'rejected'
-        audit.record_order(base_id, d['decision_id'], sym, d['action'], d['qty'],
-                           'submitted' if ok else f'rejected {resp[:60]}', bid, resp)
-        note = ' ✅ سفارش ثبت شد' if ok else f' ❌ بروکر رد کرد: {resp[:100]}'
+        qty = d['qty']
+        if conductor is not None:
+            qty, pc = conductor.approve('gld_trend', {'symbol': sym, 'side': d['action'], 'qty': d['qty'], 'price': px})
+            risk += pc
+        if qty == 0:
+            bad = [c['name'] for c in risk if not c['passed']]
+            outcome = 'blocked:' + ','.join(bad)
+            note = ' ⛔ هماهنگ‌کننده رد کرد: ' + '، '.join(bad)
+        elif DRY:
+            outcome, note = 'dry_run', f' (آزمایشی خشک: {qty} واحد، ثبت نشد)'
+        else:
+            if qty < d['qty']:
+                d['qty'] = qty
+            ok, bid, resp = broker.submit(sym, d['action'], d['qty'], base_id)
+            outcome = 'submitted' if ok else 'rejected'
+            audit.record_order(base_id, d['decision_id'], sym, d['action'], d['qty'],
+                               'submitted' if ok else f'rejected {resp[:60]}', bid, resp)
+            note = ' ✅ سفارش ثبت شد' if ok else f' ❌ بروکر رد کرد: {resp[:100]}'
     audit.record_decision(d, risk, outcome)
 
     acct = broker.account()
@@ -130,7 +147,11 @@ def main():
               f"<i>قانون نسخه‌ی {d['rule_version']} | کد {COMMIT} | شناسه {d['decision_id']}</i>"]
     msg = '\n'.join(lines)
     print(msg)
-    tg(msg)
+    if notify:
+        tg(msg)
+    return {'sleeve': 'gld_trend', 'stale': False, 'lines': lines, 'signal': d['signal'],
+            'action': act + note, 'upl': upl, 'rpl': rpl,
+            'value': float(pos['market_value']) if pos else 0.0}
 
 
 if __name__ == '__main__':

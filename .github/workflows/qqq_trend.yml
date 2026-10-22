@@ -1,8 +1,7 @@
 name: 📈 QQQ trend core (paper)
 
 on:
-  schedule:
-    - cron: '35 21 * * 1-5'  # بعد از بسته‌شدن بازار آمریکا؛ سفارش در بازگشایی بعدی اجرا می‌شود
+  # زمان‌بندی به portfolio.yml (هماهنگ‌کننده) منتقل شد؛ این فقط برای اجرای دستی است
   workflow_dispatch:
     inputs:
       dry_run:
