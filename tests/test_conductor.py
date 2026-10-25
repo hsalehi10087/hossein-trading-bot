@@ -23,7 +23,7 @@ def test_rules_valid_and_unique_owner():
 
 
 def test_owner_of_options():
-    assert PC.owner_of(R, 'KRMN261120C00035000') == 'legacy_1h'
+    assert PC.owner_of(R, 'KRMN261120C00035000') == 'exit_only'
     assert PC.owner_of(R, 'QQQ') == 'qqq_trend'
     assert PC.owner_of(R, 'TSLA') is None
 
@@ -51,10 +51,10 @@ def test_no_margin(tmp_path):
     assert q == 1  # (1500 - 1000 reserve) // 380
 
 
-def test_legacy_cannot_buy_but_can_sell(tmp_path):
+def test_exit_only_cannot_buy_but_can_sell(tmp_path):
     c = mk(tmp=tmp_path)
-    assert c.approve('legacy_1h', {'symbol': 'KRMN', 'side': 'buy', 'qty': 1, 'price': 35})[0] == 0
-    assert c.approve('legacy_1h', {'symbol': 'KRMN', 'side': 'sell', 'qty': 15, 'price': 35})[0] == 15
+    assert c.approve('exit_only', {'symbol': 'KRMN', 'side': 'buy', 'qty': 1, 'price': 35})[0] == 0
+    assert c.approve('exit_only', {'symbol': 'KRMN', 'side': 'sell', 'qty': 15, 'price': 35})[0] == 15
 
 
 def test_no_short(tmp_path):

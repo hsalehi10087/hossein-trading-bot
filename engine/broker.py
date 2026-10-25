@@ -19,6 +19,11 @@ class AlpacaPaper:
         r.raise_for_status()
         return r.json()
 
+    def positions(self):
+        r = self._req('GET', '/positions')
+        r.raise_for_status()
+        return r.json()
+
     def account(self):
         r = self._req('GET', '/account')
         r.raise_for_status()
