@@ -11,6 +11,7 @@ import traceback
 
 import requests
 
+import exit_agent
 import gld_trend
 import qqq_trend
 from engine import conductor as PC
@@ -19,7 +20,7 @@ from engine import data as D
 STORE = os.getenv('DATASTORE', 'datastore')
 ENDPOINT = (os.getenv('ALPACA_ENDPOINT') or 'https://paper-api.alpaca.markets/v2').rstrip('/')
 H = {'APCA-API-KEY-ID': os.getenv('ALPACA_KEY', ''), 'APCA-API-SECRET-KEY': os.getenv('ALPACA_SECRET', '')}
-NAMES = {'gld_trend': '🥇 روند طلا', 'qqq_trend': '📈 هسته‌ی QQQ', 'legacy_1h': '⏸ ربات قدیمی'}
+NAMES = {'gld_trend': '🥇 روند طلا', 'qqq_trend': '📈 هسته‌ی QQQ', 'exit_only': '🚪 ربات خروج'}
 
 
 def get(path):
@@ -36,7 +37,7 @@ def main():
                         kill_env=os.getenv('KILL_SWITCH', 'false').lower() == 'true')
     orphans = cond.orphans()
     results, errors = [], []
-    for mod in (gld_trend, qqq_trend):
+    for mod in (exit_agent, gld_trend, qqq_trend):
         try:
             results.append(mod.main(conductor=cond, session=session, notify=False))
         except Exception as e:
