@@ -5,3 +5,8 @@ __pycache__/
 *.pyc
 strategy_1h_live_state.json
 logs/
+
+# کلیدها و آرشیوها هرگز در مخزن نباشند (مخزن عمومی است)
+config.txt
+.env
+*.tar.gz
