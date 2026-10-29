@@ -1,8 +1,8 @@
 {
   "_opt": {
     "KRMN261120C00035000": {
-      "peak": 4.8,
-      "half": false
+      "peak": 7.3,
+      "half": true
     }
   }
 }
