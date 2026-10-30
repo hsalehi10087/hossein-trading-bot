@@ -1,0 +1,41 @@
+name: Strategy 1H
+
+on:
+  schedule:
+    # hourly at :30; the script skips cycles when /clock says the market is closed (works for EDT and EST)
+    - cron: '30 13-20 * * 1-5'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: strategy-1h
+
+jobs:
+  trading:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    - run: |
+        pip install requests pandas numpy
+    - name: Load state from data branch
+      run: |
+        scripts/datastore.sh pull
+        cp datastore/strategy_1h/live_state.json strategy_1h_live_state.json 2>/dev/null || echo '{}' > strategy_1h_live_state.json
+    - run: python strategy_1h_rest.py
+      env:
+        ALPACA_ENDPOINT: ${{ secrets.ALPACA_ENDPOINT }}
+        ALPACA_KEY: ${{ secrets.ALPACA_KEY }}
+        ALPACA_SECRET: ${{ secrets.ALPACA_SECRET }}
+        FINNHUB_KEY: ${{ secrets.FINNHUB_KEY }}
+        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+    - name: Save state
+      if: always()
+      run: |
+        mkdir -p datastore/strategy_1h && cp strategy_1h_live_state.json datastore/strategy_1h/live_state.json
+        scripts/datastore.sh push "strategy state $(date -u +%F_%H%M)"
