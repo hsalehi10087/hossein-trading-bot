@@ -1,0 +1,21 @@
+{
+ "positions": [
+  {
+   "symbol": "KRMN261120C00035000",
+   "qty": "8",
+   "avg_entry_price": "4.2",
+   "market_value": "4720",
+   "unrealized_pl": "1360",
+   "asset_class": "us_option"
+  },
+  {
+   "symbol": "QQQ",
+   "qty": "27",
+   "avg_entry_price": "721.833333",
+   "market_value": "18652.41",
+   "unrealized_pl": "-837.089991",
+   "asset_class": "us_equity"
+  }
+ ],
+ "open_orders": []
+}
