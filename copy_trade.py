@@ -190,9 +190,7 @@ def main():
     prules = PC.load()
     today = str(dt.date.today())
     clock = get('/clock')
-    if not clock.get('is_open') and not DRY and '--force' not in sys.argv:
-        print('market closed — skip')
-        return 0
+    market_open = bool(clock.get('is_open')) or DRY or '--force' in sys.argv   # بسته: فقط گزارش، بدون معامله
     base = rules['source_url'].rstrip('/')
     events = [json.loads(l) for l in requests.get(base + '/events.jsonl', timeout=30).text.splitlines() if l.strip()]
     lj = requests.get(base + '/leaders.json', timeout=30).json()
@@ -212,6 +210,11 @@ def main():
     spy = prices.get('SPY')
     done_buys, done_sells, removed_now, notes = [], [], [], []
 
+    plans, skipped = [], []
+    if not market_open:
+        notes.append('بازار امروز بسته است؛ فقط گزارش، بدون معامله')
+        report(state, sel, prices, done_buys, done_sells, removed_now, skipped, notes, today, events)
+        return 0
     # ۱) خروج‌ها: حد ضرر یا فروش تریدر
     sells = {(e['leader'], e['ticker']) for e in events if e['side'] == 'sell' and e['id'] not in state['processed']}
     keep = []
@@ -275,12 +278,19 @@ def main():
 
     os.makedirs(os.path.dirname(STATE), exist_ok=True)
     json.dump(state, open(STATE, 'w'), ensure_ascii=False, indent=1)
-    report(state, sel, prices, done_buys, done_sells, removed_now, skipped, notes, today)
+    report(state, sel, prices, done_buys, done_sells, removed_now, skipped, notes, today, events)
     return 0
 
 
-def report(state, sel, prices, buys, sells, removed, skipped, notes, today):
+def report(state, sel, prices, buys, sells, removed, skipped, notes, today, events=()):
     L = [f'<b>👥 کپی ترید — {fa(today.replace("-", "/"))}</b>']
+    fresh = [e for e in events if e['seen'] >= str(dt.date.fromisoformat(today) - dt.timedelta(days=1))
+             and sel.get(e['leader'], {}).get('active')]
+    if fresh:
+        L.append('<b>👀 معاملات تازه‌ی تریدرها</b>')
+        for e in fresh[:15]:
+            L.append(f"{SRC_FA.get(e['source'], '')} {e['leader'].split(':', 1)[1][:30]}: "
+                     f"{'خرید' if e['side'] == 'buy' else 'فروش'} <b>{e['ticker']}</b>")
     if buys:
         L.append('<b>🟢 خریدهای امروز</b>')
         for pl, q, p in buys:
@@ -312,6 +322,12 @@ def report(state, sel, prices, buys, sells, removed, skipped, notes, today):
             st = '⛔' if rec['removed'] else '✅'
             L.append(f"{st} {SRC_FA.get(n.split(':')[0], '')} {n.split(':', 1)[1][:28]}: {fa(nl)} | {fa(nc)} | "
                      f"{fa(f'{upl:+,.0f}')}$ | {fa(rec['consec'])}/۳")
+    if state['lots']:
+        L.append('<b>💼 موقعیت‌های باز</b>')
+        for l in sorted(state['lots'], key=lambda x: x['date']):
+            p = prices.get(l['ticker'])
+            r = f"{fa(f'{(p / l['entry'] - 1) * 100:+.1f}')}٪" if p else '—'
+            L.append(f"<b>{l['ticker']}</b> × {fa(l['qty'])} از {fa(l['date'][5:].replace('-', '/'))}: {r} ({l['leader'].split(':', 1)[1][:24]})")
     active = sum(1 for n, v in sel.items() if v.get('active') and not state['leaders'].get(n, {}).get('removed'))
     inv = sum(l['qty'] * l['entry'] for l in state['lots'])
     L.append(f"<i>تریدرهای فعال: {fa(active)} | سرمایه‌ی درگیر: {fa(f'{inv:,.0f}')} از ۱۰٬۰۰۰ دلار | "

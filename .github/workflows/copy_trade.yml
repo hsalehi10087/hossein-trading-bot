@@ -2,7 +2,7 @@ name: 👥 Copy trade (daily, paper)
 
 on:
   schedule:
-    - cron: '45 15 * * 1-5'   # ساعت ۱۰:۴۵ تا ۱۱:۴۵ نیویورک (بازار باز)؛ ۱۹:۱۵ تهران
+    - cron: '45 15 * * *'   # هر روز ۱۹:۱۵ تهران؛ روزهای کاری معامله + گزارش، تعطیلات فقط گزارش
   workflow_dispatch:
     inputs:
       dry_run:
