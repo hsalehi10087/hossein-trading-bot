@@ -21,7 +21,7 @@ jobs:
       with:
         python-version: '3.11'
     - run: |
-        pip install requests pandas numpy
+        pip install requests pandas numpy pyyaml
     - name: Load state from data branch
       run: |
         scripts/datastore.sh pull

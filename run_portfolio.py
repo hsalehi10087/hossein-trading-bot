@@ -19,7 +19,7 @@ from engine import data as D
 STORE = os.getenv('DATASTORE', 'datastore')
 ENDPOINT = (os.getenv('ALPACA_ENDPOINT') or 'https://paper-api.alpaca.markets/v2').rstrip('/')
 H = {'APCA-API-KEY-ID': os.getenv('ALPACA_KEY', ''), 'APCA-API-SECRET-KEY': os.getenv('ALPACA_SECRET', '')}
-NAMES = {'gld_trend': '🥇 روند طلا', 'qqq_trend': '📈 هسته‌ی QQQ', 'legacy_1h': '⏸ ربات قدیمی'}
+NAMES = {'gld_trend': '🥇 روند طلا', 'qqq_trend': '📈 هسته‌ی QQQ', 'legacy_1h': '⏱ ربات ساعتی', 'copy_trade': '👥 کپی ترید'}
 
 
 def get(path):

@@ -25,12 +25,20 @@ def test_rules_valid_and_unique_owner():
 def test_owner_of_options():
     assert PC.owner_of(R, 'KRMN261120C00035000') == 'legacy_1h'
     assert PC.owner_of(R, 'QQQ') == 'qqq_trend'
-    assert PC.owner_of(R, 'TSLA') is None
+    assert PC.owner_of(R, 'TSLA') == 'copy_trade'                 # سهم بی‌صاحب ← کپی ترید
+    assert PC.owner_of(R, 'TSLA261120C00100000') is None          # اختیار معامله‌ی بی‌صاحب
 
 
 def test_orphans(tmp_path):
-    c = mk(positions=[{'symbol': 'VT', 'qty': '10', 'current_price': '100', 'market_value': '1000'}], tmp=tmp_path)
-    assert c.orphans() == [('VT', 10.0, 1000.0)]
+    c = mk(positions=[{'symbol': 'TSLA261120C00100000', 'qty': '1', 'current_price': '500', 'market_value': '500'}],
+           tmp=tmp_path)
+    assert c.orphans() == [('TSLA261120C00100000', 1.0, 500.0)]
+
+
+def test_single_wildcard_owner():
+    bad = copy.deepcopy(R)
+    bad['sleeves']['gld_trend']['symbols'].append('*')
+    assert any('wildcard' in e for e in PC.validate(bad))
 
 
 def test_wrong_owner_blocked(tmp_path):
@@ -51,10 +59,20 @@ def test_no_margin(tmp_path):
     assert q == 1  # (1500 - 1000 reserve) // 380
 
 
-def test_legacy_cannot_buy_but_can_sell(tmp_path):
-    c = mk(tmp=tmp_path)
-    assert c.approve('legacy_1h', {'symbol': 'KRMN', 'side': 'buy', 'qty': 1, 'price': 35})[0] == 0
-    assert c.approve('legacy_1h', {'symbol': 'KRMN', 'side': 'sell', 'qty': 15, 'price': 35})[0] == 15
+def test_legacy_sleeve_capped_at_5k(tmp_path):
+    c = mk(positions=[{'symbol': 'KRMN261120C00035000', 'qty': '8', 'current_price': '590', 'market_value': '4720'}],
+           tmp=tmp_path)
+    # سقف ۵۰۰۰ + ۱۰٪ = ۵۵۰۰؛ اختیار KRMN با ۴۷۲۰ دلار فقط ۷۸۰ دلار جا می‌گذارد
+    assert c.approve('legacy_1h', {'symbol': 'NVDA', 'side': 'buy', 'qty': 10, 'price': 200})[0] == 3
+    assert c.approve('legacy_1h', {'symbol': 'TSLA', 'side': 'buy', 'qty': 1, 'price': 100})[0] == 0   # صاحب ندارد
+    assert c.approve('legacy_1h', {'symbol': 'KRMN261120C00035000', 'side': 'sell', 'qty': 8, 'price': 590})[0] == 8
+
+
+def test_legacy_buys_off_when_disabled(tmp_path):
+    r = copy.deepcopy(R)
+    r['sleeves']['legacy_1h']['buys_allowed'] = False
+    c = PC.Conductor(r, {'equity': 86000, 'cash': 57000}, [], str(tmp_path / 's.json'))
+    assert c.approve('legacy_1h', {'symbol': 'NVDA', 'side': 'buy', 'qty': 1, 'price': 200})[0] == 0
 
 
 def test_no_short(tmp_path):

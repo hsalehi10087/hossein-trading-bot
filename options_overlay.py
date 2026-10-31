@@ -136,7 +136,7 @@ def contracts_for(alpaca, underlying, today=None):
 
 
 def run(alpaca, symbols, regimes, prices, hourly, daily, equity, state, key, secret, finnhub_key,
-        dry=False, log=print, entries=True):
+        dry=False, log=print, entries=True, budget_usd=None, approve=None):
     """Manage option positions. `state` is mutated: state['_opt'][contract] = {'peak','half'}.
     Returns signal strings; never raises."""
     signals = []
@@ -144,7 +144,7 @@ def run(alpaca, symbols, regimes, prices, hourly, daily, equity, state, key, sec
         return signals
     try:
         opt_state = state.setdefault("_opt", {})
-        total = equity * float(os.environ.get("OPT_BUDGET_PCT", "0.10"))
+        total = budget_usd if budget_usd is not None else equity * float(os.environ.get("OPT_BUDGET_PCT", "0.10"))
         positions = [p for p in alpaca.get_positions() if p.get("asset_class") == "us_option"]
         mine = [p for p in positions if (parse_occ(p["symbol"]) or {}).get("root") in symbols]
         used, roots = 0.0, set()
@@ -205,6 +205,8 @@ def run(alpaca, symbols, regimes, prices, hourly, daily, equity, state, key, sec
                 continue
             sym, mid, delta = pick
             qty = int(min(share, room) // (mid * 100))
+            if qty >= 1 and approve:
+                qty = approve(sym, qty, mid * 100)                       # conductor: sleeve cap, cash, brake
             if qty < 1:
                 log(f"  {s}: contract ${mid * 100:.0f} exceeds its budget - skipped")
                 continue
