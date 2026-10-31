@@ -1,7 +1,7 @@
 # قوانین هماهنگ‌کننده‌ی سبد — تقسیم سرمایه، صاحب هر نماد و حدود کل حساب.
 # مثل بقیه‌ی قوانین فقط با Pull Request تغییر می‌کند (version+1).
-version: 1
-approved: '2026-10-22'
+version: 2
+approved: '2026-10-31'
 
 sleeves:
   gld_trend:            # ربات روند طلا
@@ -12,11 +12,11 @@ sleeves:
     capital_usd: 20000
     symbols: [QQQ, IEF]
     buys_allowed: true
-  legacy_1h:            # ربات قدیمی یک‌ساعته — فقط مدیریت و فروش موقعیت‌های فعلی
-    capital_usd: 0
+  legacy_1h:            # ربات یک‌ساعته — خرید دوباره فعال (۲۰۲۶/۱۰/۳۱) با سقف ۵ هزار دلار (≈۸۰٪ سهام، ≈۲۰٪ اختیار خرید)
+    capital_usd: 5000
     symbols: [AMZN, CRGY, KRMN, MU, NVDA, DELL, CVX, HON]
     option_roots: [AMZN, CRGY, KRMN, MU, NVDA, DELL, CVX, HON]
-    buys_allowed: false
+    buys_allowed: true
 
 account:
   no_margin: true            # نقد بعد از خریدها نباید از reserve_cash_usd کمتر شود

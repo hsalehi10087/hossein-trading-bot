@@ -51,10 +51,20 @@ def test_no_margin(tmp_path):
     assert q == 1  # (1500 - 1000 reserve) // 380
 
 
-def test_legacy_cannot_buy_but_can_sell(tmp_path):
-    c = mk(tmp=tmp_path)
-    assert c.approve('legacy_1h', {'symbol': 'KRMN', 'side': 'buy', 'qty': 1, 'price': 35})[0] == 0
-    assert c.approve('legacy_1h', {'symbol': 'KRMN', 'side': 'sell', 'qty': 15, 'price': 35})[0] == 15
+def test_legacy_sleeve_capped_at_5k(tmp_path):
+    c = mk(positions=[{'symbol': 'KRMN261120C00035000', 'qty': '8', 'current_price': '590', 'market_value': '4720'}],
+           tmp=tmp_path)
+    # سقف ۵۰۰۰ + ۱۰٪ = ۵۵۰۰؛ اختیار KRMN با ۴۷۲۰ دلار فقط ۷۸۰ دلار جا می‌گذارد
+    assert c.approve('legacy_1h', {'symbol': 'NVDA', 'side': 'buy', 'qty': 10, 'price': 200})[0] == 3
+    assert c.approve('legacy_1h', {'symbol': 'TSLA', 'side': 'buy', 'qty': 1, 'price': 100})[0] == 0   # صاحب ندارد
+    assert c.approve('legacy_1h', {'symbol': 'KRMN261120C00035000', 'side': 'sell', 'qty': 8, 'price': 590})[0] == 8
+
+
+def test_legacy_buys_off_when_disabled(tmp_path):
+    r = copy.deepcopy(R)
+    r['sleeves']['legacy_1h']['buys_allowed'] = False
+    c = PC.Conductor(r, {'equity': 86000, 'cash': 57000}, [], str(tmp_path / 's.json'))
+    assert c.approve('legacy_1h', {'symbol': 'NVDA', 'side': 'buy', 'qty': 1, 'price': 200})[0] == 0
 
 
 def test_no_short(tmp_path):

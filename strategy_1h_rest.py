@@ -174,7 +174,9 @@ SCALE_MIN, SCALE_MAX = 0.5, 1.25
 DAILY_LOSS_BRAKE = 0.03                  # no new buys if equity is down >3% vs previous close
 # 2026-10-20: new buys (stocks AND options) paused by the user; exits/stops keep managing open positions.
 # Re-enabling requires a PR that flips this flag.
-NEW_BUYS_ENABLED = False
+NEW_BUYS_ENABLED = True   # 2026-10-31: re-enabled by the user, capped by the conductor's legacy_1h sleeve ($5k)
+SLEEVE = 'legacy_1h'
+STOCK_SHARE, OPTION_SHARE = 0.8, 0.2     # split of the sleeve capital
 
 def size_scale(closes, n=30):
     """Volatile names get a smaller budget, calm names a slightly larger one."""
@@ -275,7 +277,22 @@ def main():
         pause = "new buys disabled by rules (NEW_BUYS_ENABLED=False)"
     print(f"Market (SPY): {market.value}" + (f" | ⛔ new buys paused: {pause}" if pause else ""))
     equity = float(acct.get('equity', 100000))
-    budget = (equity * 0.5) / len(symbols)
+    # Every buy goes through the portfolio conductor (rules/portfolio.yaml): sleeve cap, owner, cash, gross, brake.
+    import sys as _sys
+    _sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    from engine import conductor as PC
+    rules = PC.load()
+    cap = float(rules['sleeves'][SLEEVE]['capital_usd'])
+    cond = PC.Conductor(rules, acct, list(held.values()), os.path.join('datastore', 'portfolio', 'state.json'))
+    if not rules['sleeves'][SLEEVE]['buys_allowed'] or cap <= 0:
+        pause = pause or "sleeve buys not allowed in rules/portfolio.yaml"
+    budget = cap * STOCK_SHARE / max(1, len(symbols))
+
+    def approve(sym, qty, unit_price):
+        q, checks = cond.approve(SLEEVE, {'symbol': sym, 'side': 'buy', 'qty': qty, 'price': unit_price})
+        if q < qty:
+            print(f"  🧭 conductor: {sym} {qty}→{q} | " + ", ".join(c['name'] for c in checks if not c['passed']))
+        return q
     signals = []
     regimes, prices = {}, {}
 
@@ -299,6 +316,7 @@ def main():
         if action == 'buy':
             level = what
             qty = int((budget * size_scale(closes) * LEVEL_PCTS[level - 1]) / price)
+            qty = approve(sym, qty, price) if qty >= 1 else 0
             if qty >= 1:
                 ok = dry or alpaca.place_order(sym, qty, "buy")
                 if ok:
@@ -327,7 +345,8 @@ def main():
     if not dry or os.environ.get("OPTIONS_IN_DRY") == "1":
         signals += options_overlay.run(alpaca, symbols, regimes, prices, bars,
                                        get_bars(symbols, days=45, timeframe="1Day"), equity, state,
-                                       cfg("ALPACA_KEY"), cfg("ALPACA_SECRET"), cfg("FINNHUB_KEY"), dry=dry, entries=not pause)
+                                       cfg("ALPACA_KEY"), cfg("ALPACA_SECRET"), cfg("FINNHUB_KEY"), dry=dry, entries=not pause,
+                                       budget_usd=cap * OPTION_SHARE, approve=approve)
     json.dump(state, open(state_file, 'w'), indent=2)
     print("\n" + "=" * 70)
     print(f"✅ Cycle completed: {len(signals)} signals | positions tracked: {len([k for k in state if k != '_opt'])}" + (" (DRY RUN)" if dry else ""))
