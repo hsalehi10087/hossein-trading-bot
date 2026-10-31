@@ -36,6 +36,11 @@ def validate(r):
             if k not in s:
                 errs.append(f'{name}: missing {k}')
         for sym in s.get('symbols', []):
+            if sym == '*':
+                if '*' in owner:
+                    errs.append(f"wildcard '*' used by both {owner['*']} and {name}")
+                owner['*'] = name
+                continue
             if sym in owner:
                 errs.append(f'{sym} owned by both {owner[sym]} and {name}')
             owner[sym] = name
@@ -48,13 +53,17 @@ def validate(r):
 
 
 def owner_of(rules, symbol):
+    """صاحب نماد: اول فهرست صریح هر ربات؛ بعد رباتی که symbols: ['*'] دارد (فقط سهام، نه اختیار معامله)."""
     m = OCC.match(symbol)
+    wild = None
     for name, s in rules['sleeves'].items():
         if symbol in s['symbols']:
             return name
         if m and m.group(1) in s.get('option_roots', []):
             return name
-    return None
+        if '*' in s['symbols']:
+            wild = name
+    return wild if wild and not m else None
 
 
 class Conductor:

@@ -1,0 +1,19 @@
+# قواعد ربات کپی ترید — فقط با Pull Request تغییر می‌کند (version+1).
+version: 1
+approved: '2026-10-31'
+source_url: https://raw.githubusercontent.com/hsalehi10087/stock-scanner/main/data/copytrade
+capital_usd: 10000            # سقف کل (هماهنگ‌کننده هم همین را در portfolio.yaml چک می‌کند)
+per_leader_usd: 2000          # سقف سرمایه‌ی باز برای کپی هر تریدر
+base_trade_usd: 500           # اندازه‌ی هر کپی
+cluster_multiplier: 2         # اگر ≥۲ تریدر از فهرست در ۱۰ روز همان سهم را بخرند: ۲ برابر
+cluster_window_days: 10
+max_trade_usd: 1000           # سقف هر معامله
+max_chase_pct: 0.15           # اگر سهم از روز معامله‌ی تریدر بیش از ۱۵٪ بالا رفته: کپی نکن
+event_max_age_days: 10        # رویدادی که بیش از ۱۰ روز پیش دیده شده کپی نمی‌شود
+stop_loss_pct: 0.15           # حد ضرر هر معامله
+loss_mark_pct: 0.10           # معامله‌ای که ۱۰٪ زیر قیمت ورود برود «ضرر» حساب می‌شود (یک بار)
+max_consecutive_losses: 3     # ۳ ضرر پشت سر هم ← حذف تریدر
+perf_window_days: 182         # بازده کپی هر تریدر در ۶ ماه اخیر …
+perf_lag_vs_spy: 0.10         # … اگر ۱۰٪ از S&P 500 عقب باشد ← حذف
+perf_min_trades: 3            # حداقل معامله برای قضاوت عملکرد
+min_price_usd: 5

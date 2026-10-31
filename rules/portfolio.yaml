@@ -1,6 +1,6 @@
 # قوانین هماهنگ‌کننده‌ی سبد — تقسیم سرمایه، صاحب هر نماد و حدود کل حساب.
 # مثل بقیه‌ی قوانین فقط با Pull Request تغییر می‌کند (version+1).
-version: 2
+version: 3
 approved: '2026-10-31'
 
 sleeves:
@@ -16,6 +16,10 @@ sleeves:
     capital_usd: 5000
     symbols: [AMZN, CRGY, KRMN, MU, NVDA, DELL, CVX, HON]
     option_roots: [AMZN, CRGY, KRMN, MU, NVDA, DELL, CVX, HON]
+    buys_allowed: true
+  copy_trade:           # کپی ترید از تریدرهای بزرگ (قواعد جزئی در rules/copy_trade.yaml)
+    capital_usd: 10000
+    symbols: ['*']      # هر سهمی که صاحب دیگری ندارد
     buys_allowed: true
 
 account:

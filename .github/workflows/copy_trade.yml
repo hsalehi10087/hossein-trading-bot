@@ -1,0 +1,45 @@
+name: 👥 Copy trade (daily, paper)
+
+on:
+  schedule:
+    - cron: '45 15 * * 1-5'   # ساعت ۱۰:۴۵ تا ۱۱:۴۵ نیویورک (بازار باز)؛ ۱۹:۱۵ تهران
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'بدون ثبت سفارش (true/false)'
+        required: false
+        default: 'false'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: portfolio
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -q requests pyyaml pytest pandas numpy
+      - name: Tests must pass before trading
+        run: python -m pytest -q tests
+      - run: scripts/datastore.sh pull
+      - name: Copy trades through the conductor
+        env:
+          ALPACA_KEY: ${{ secrets.ALPACA_KEY }}
+          ALPACA_SECRET: ${{ secrets.ALPACA_SECRET }}
+          ALPACA_ENDPOINT: ${{ secrets.ALPACA_ENDPOINT }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
+        run: |
+          echo "::add-mask::$TELEGRAM_BOT_TOKEN"
+          python3 copy_trade.py
+      - if: always()
+        run: scripts/datastore.sh push "👥 copy trade $(date -u +%F)"
