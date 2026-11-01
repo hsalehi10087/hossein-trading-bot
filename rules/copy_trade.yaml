@@ -1,6 +1,6 @@
 # قواعد ربات کپی ترید — فقط با Pull Request تغییر می‌کند (version+1).
-version: 1
-approved: '2026-10-31'
+version: 2
+approved: '2026-11-01'
 source_url: https://raw.githubusercontent.com/hsalehi10087/stock-scanner/main/data/copytrade
 capital_usd: 10000            # سقف کل (هماهنگ‌کننده هم همین را در portfolio.yaml چک می‌کند)
 per_leader_usd: 2000          # سقف سرمایه‌ی باز برای کپی هر تریدر
@@ -17,3 +17,4 @@ perf_window_days: 182         # بازده کپی هر تریدر در ۶ ماه
 perf_lag_vs_spy: 0.10         # … اگر ۱۰٪ از S&P 500 عقب باشد ← حذف
 perf_min_trades: 3            # حداقل معامله برای قضاوت عملکرد
 min_price_usd: 5
+insiders_per_company: true    # مدیران هر شرکت یک تریدر جدا (هر کدام سقف per_leader_usd)؛ ضررها روی کل گروه هم شمرده می‌شود

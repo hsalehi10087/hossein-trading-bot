@@ -34,6 +34,7 @@ if not ENDPOINT.endswith('/v2'):
 DATA = 'https://data.alpaca.markets/v2'
 H = {'APCA-API-KEY-ID': os.getenv('ALPACA_KEY', ''), 'APCA-API-SECRET-KEY': os.getenv('ALPACA_SECRET', '')}
 SLEEVE = 'copy_trade'
+INSIDER_GROUP = 'Insiders:Cluster buys'
 SRC_FA = {'13F': '🏦', 'ARK': '🚀', 'Congress': '🏛', 'Insiders': '👔'}
 DRY = os.getenv('DRY_RUN', 'false').lower() == 'true'
 
@@ -199,8 +200,19 @@ def main():
     for name in sel:
         leader_rec(state, name)
 
+    # مدیران هر شرکت یک «تریدر» جدا هستند (سقف ۲۰۰۰ دلار برای هر شرکت)؛ ۳ ضرر پشت سر هم کل گروه را هم متوقف می‌کند
+    if rules.get('insiders_per_company'):
+        for e in events:
+            if e['source'] == 'Insiders' and not e['leader'].startswith('Insiders:مدیران '):
+                e['leader'] = f"Insiders:مدیران {e['ticker']}"
+
+    def group(name):
+        return INSIDER_GROUP if name.startswith('Insiders:') else name
+
     def ok(name):
-        return bool(sel.get(name, {}).get('active')) and not leader_rec(state, name)['removed']
+        g = group(name)
+        return (bool(sel.get(g, {}).get('active')) and not leader_rec(state, g)['removed']
+                and not leader_rec(state, name)['removed'])
 
     acct, positions = get('/account'), get('/positions')
     pos = {p['symbol']: p for p in positions}
@@ -237,8 +249,9 @@ def main():
                                         'date_out': today, 'reason': reason})
                 done_sells.append((lot, p, ret, reason))
                 if not lot.get('loss_marked'):         # اگر قبلاً ضرر حساب نشده بود
-                    if register_result(state, rules, lot['leader'], ret < 0, today):
-                        removed_now.append(lot['leader'])
+                    for who in dict.fromkeys([lot['leader'], group(lot['leader'])]):
+                        if register_result(state, rules, who, ret < 0, today):
+                            removed_now.append(who)
                 continue
         elif reason is None and lot['ticker'] not in pos:
             notes.append(f"{lot['ticker']}: در حساب نیست (دستی بسته شده؟) — از فهرست حذف شد")
@@ -246,8 +259,9 @@ def main():
         # معامله‌ی باز که ۱۰٪ زیر ورود رفته: یک ضرر (فقط یک بار)
         if p and not lot.get('loss_marked') and p <= lot['entry'] * (1 - rules['loss_mark_pct']):
             lot['loss_marked'] = True
-            if register_result(state, rules, lot['leader'], True, today):
-                removed_now.append(lot['leader'])
+            for who in dict.fromkeys([lot['leader'], group(lot['leader'])]):
+                if register_result(state, rules, who, True, today):
+                    removed_now.append(who)
         keep.append(lot)
     state['lots'] = keep
 
@@ -282,8 +296,47 @@ def main():
     return 0
 
 
+NAMES = {'gld_trend': '🥇 روند طلا', 'qqq_trend': '📈 هسته‌ی QQQ', 'legacy_1h': '⏱ ربات ساعتی', 'copy_trade': '👥 کپی ترید'}
+
+
+def account_section(prules):
+    """وضعیت کل حساب و همه‌ی ربات‌ها (گزارش واحد معاملات)."""
+    try:
+        acct, positions = get('/account'), get('/positions')
+    except Exception as e:
+        return [f'<i>⚠️ وضعیت حساب خوانده نشد: {e}</i>']
+    eq, last = float(acct['equity']), float(acct.get('last_equity') or acct['equity'])
+    by = {}
+    for p in positions:
+        v = by.setdefault(PC.owner_of(prules, p['symbol']) or 'بی‌صاحب', {'value': 0.0, 'upl': 0.0, 'day': 0.0})
+        v['value'] += float(p['market_value'])
+        v['upl'] += float(p['unrealized_pl'])
+        v['day'] += float(p.get('unrealized_intraday_pl') or 0)
+    L = ['<b>💼 کل حساب (همه‌ی ربات‌ها)</b>',
+         f"ارزش حساب: <b>{fa(f'{eq:,.0f}')}$</b> | امروز: {fa(f'{eq - last:+,.0f}')}$ ({fa(f'{(eq / last - 1) * 100:+.2f}')}٪) | "
+         f"نقد: {fa(f'{float(acct["cash"]):,.0f}')}$"]
+    for name, s in prules['sleeves'].items():
+        v = by.get(name, {'value': 0.0, 'upl': 0.0, 'day': 0.0})
+        L.append(f"{NAMES.get(name, name)}: در بازار {fa(f'{v['value']:,.0f}')} از {fa(f'{s['capital_usd']:,}')}$ | "
+                 f"سود/زیان باز {fa(f'{v['upl']:+,.0f}')}$ | امروز {fa(f'{v['day']:+,.0f}')}$")
+    if 'بی‌صاحب' in by:
+        L.append(f"⚠️ موقعیت بی‌صاحب: {fa(f'{by['بی‌صاحب']['value']:,.0f}')}$")
+    try:
+        lr = json.load(open(os.path.join(STORE, 'portfolio', 'last_report.json'), encoding='utf-8'))
+        L.append('<i>آخرین تصمیم طلا و QQQ (' + lr['session'] + '): ' +
+                 ' | '.join(f"{NAMES.get(k, k)}: {v}" for k, v in lr['actions'].items()) + '</i>')
+    except Exception:
+        pass
+    return L + ['']
+
+
 def report(state, sel, prices, buys, sells, removed, skipped, notes, today, events=()):
-    L = [f'<b>👥 کپی ترید — {fa(today.replace("-", "/"))}</b>']
+    L = [f'<b>📊 گزارش روزانه‌ی معاملات — {fa(today.replace("-", "/"))}</b>']
+    try:
+        L += account_section(PC.load())
+    except Exception as e:
+        L.append(f'<i>⚠️ {e}</i>')
+    L.append('<b>👥 کپی ترید</b>')
     fresh = [e for e in events if e['seen'] >= str(dt.date.fromisoformat(today) - dt.timedelta(days=1))
              and sel.get(e['leader'], {}).get('active')]
     if fresh:

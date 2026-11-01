@@ -83,7 +83,16 @@ def main():
                    [round(by_sleeve.get(n, {}).get('value', 0.0), 2) for n in rules['sleeves']])
     msg = '\n'.join(lines)
     print(msg)
-    gld_trend.tg(msg)
+    import json
+    acted = [r for r in results if r.get('stale') or not str(r.get('action', '')).startswith('بدون تغییر')]
+    json.dump({'session': str(session), 'ts_utc': dt.datetime.now(dt.timezone.utc).isoformat(timespec='seconds'),
+               'actions': {r['sleeve']: r.get('action', 'داده‌ی کهنه') for r in results}},
+              open(os.path.join(STORE, 'portfolio', 'last_report.json'), 'w', encoding='utf-8'), ensure_ascii=False)
+    # گزارش روزانه‌ی یکجای معاملات ساعت ۱۹:۱۵ (copy_trade.py) فرستاده می‌شود؛ اینجا فقط وقتی کاری شد یا مشکلی هست
+    if acted or errors or orphans or cond.brake or cond.kill:
+        gld_trend.tg(msg)
+    else:
+        print('no actions — Telegram skipped (included in the 19:15 unified report)')
     return 1 if errors else 0
 
 
