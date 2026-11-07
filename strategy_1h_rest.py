@@ -177,6 +177,9 @@ DAILY_LOSS_BRAKE = 0.03                  # no new buys if equity is down >3% vs 
 NEW_BUYS_ENABLED = True   # 2026-10-31: re-enabled by the user, capped by the conductor's legacy_1h sleeve ($5k)
 SLEEVE = 'legacy_1h'
 STOCK_SHARE, OPTION_SHARE = 0.8, 0.2     # split of the sleeve capital
+# 2026-11-07: خرید تازه‌ی اختیار معامله خاموش تا وقتی قاعده‌اش روی داده‌ی گذشته آزموده و قبول شود.
+# اختیارهای باز همچنان با همان قواعد فروش مدیریت می‌شوند.
+OPTION_ENTRIES_ENABLED = False
 
 def size_scale(closes, n=30):
     """Volatile names get a smaller budget, calm names a slightly larger one."""
@@ -346,7 +349,7 @@ def main():
     if not dry or os.environ.get("OPTIONS_IN_DRY") == "1":
         signals += options_overlay.run(alpaca, symbols, regimes, prices, bars,
                                        get_bars(symbols, days=45, timeframe="1Day"), equity, state,
-                                       cfg("ALPACA_KEY"), cfg("ALPACA_SECRET"), cfg("FINNHUB_KEY"), dry=dry, entries=not pause,
+                                       cfg("ALPACA_KEY"), cfg("ALPACA_SECRET"), cfg("FINNHUB_KEY"), dry=dry, entries=(not pause) and OPTION_ENTRIES_ENABLED,
                                        budget_usd=cap * OPTION_SHARE, approve=approve)
     json.dump(state, open(state_file, 'w'), indent=2)
     print("\n" + "=" * 70)
