@@ -170,7 +170,10 @@ def run(alpaca, symbols, regimes, prices, hourly, daily, equity, state, key, sec
                 else:
                     opt_state.pop(sym, None)
                     roots.discard(root)
-                signals.append(f"💼 OPT {act} {sym}: {sell_qty} @ ${cur:.2f} | {cur / cost - 1:+.0%}")
+                why = {"HALF": "فروش نصف در ۶۰٪ سود", "TRAIL": "حد سود متحرک (۲۵٪ افت از بالاترین قیمت)",
+                       "STOP": "حد ضرر ۳۵٪", "EXPIRY": "نزدیک سررسید"}.get(act, act)
+                signals.append(f"💼 اختیار خرید <b>{sym}</b>: فروش {sell_qty} قرارداد به قیمت {cur:.2f}$ "
+                               f"({why}) | سود/زیان {cur / cost - 1:+.0%} نسبت به قیمت خرید {cost:.2f}$")
         live = {p["symbol"] for p in positions}
         for sym in [s for s in opt_state if s not in live]:
             opt_state.pop(sym, None)                                    # closed elsewhere
@@ -216,7 +219,7 @@ def run(alpaca, symbols, regimes, prices, hourly, daily, equity, state, key, sec
                 used += mid * qty * 100
                 opt_state[sym] = {"peak": mid, "half": False}
                 d = f" Δ{delta:.2f}" if delta is not None else ""
-                signals.append(f"💼 OPT BUY_CALL {sym}: {qty} @ ${mid:.2f}{d} (premium ${mid * qty * 100:,.0f})")
+                signals.append(f"💼 خرید اختیار خرید <b>{sym}</b>: {qty} قرارداد به قیمت {mid:.2f}$ (کل {mid * qty * 100:,.0f}$)")
     except Exception as e:                                              # never stop the stock logic
         log(f"⚠️ options overlay error: {e}")
     return signals

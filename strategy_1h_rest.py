@@ -325,7 +325,7 @@ def main():
                     else:
                         tot = pos['qty'] + qty
                         pos.update(avg=(pos['avg'] * pos['qty'] + price * qty) / tot, qty=tot, level=level)
-                    signals.append(f"✅ BUY_L{level} {sym}: {qty} @ ${price:.2f}")
+                    signals.append(f"✅ خرید پله‌ی {level}: <b>{sym}</b> × {qty} سهم به قیمت {price:.2f}$")
                     line += f" | BUY_L{level} x{qty}"
                 else:
                     line += " | ❌ order failed"
@@ -335,7 +335,8 @@ def main():
             if ok:
                 pnl_pct = (price / avg - 1) * 100
                 icon = {'TP': '✅', 'TRAIL': '🔔', 'STOP': '🛑'}[what]
-                signals.append(f"{icon} EXIT_{what} {sym}: {qty} @ ${price:.2f} | PnL: {pnl_pct:+.2f}%")
+                signals.append(f"{icon} فروش ({ {'TP': 'حد سود ۲٫۵٪', 'TRAIL': 'حد سود متحرک', 'STOP': 'حد ضرر ۳٪'}[what] }): "
+                               f"<b>{sym}</b> × {qty} سهم به قیمت {price:.2f}$ | سود/زیان {pnl_pct:+.2f}٪")
                 line += f" | EXIT_{what} {pnl_pct:+.2f}%"
                 state.pop(sym, None)
             else:
@@ -351,7 +352,7 @@ def main():
     print("\n" + "=" * 70)
     print(f"✅ Cycle completed: {len(signals)} signals | positions tracked: {len([k for k in state if k != '_opt'])}" + (" (DRY RUN)" if dry else ""))
     if signals and not dry:
-        msg = "🟢 <b>1H Strategy Signals</b>\n\n" + "\n".join(signals[:10])
+        msg = "⏱ <b>ربات ساعتی — معامله‌ی تازه</b>\n\n" + "\n".join(signals[:10]) + "\n<i>حساب آزمایشی Alpaca</i>"
         print("✅ Telegram notification sent" if send_telegram(msg) else "⚠️  Telegram notification failed")
     print("=" * 70 + "\n")
 

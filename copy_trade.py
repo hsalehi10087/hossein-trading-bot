@@ -191,7 +191,17 @@ def main():
     prules = PC.load()
     today = str(dt.date.today())
     clock = get('/clock')
-    market_open = bool(clock.get('is_open')) or DRY or '--force' in sys.argv   # بسته: فقط گزارش، بدون معامله
+    # GitHub اجرای زمان‌بندی‌شده را گاهی چند ساعت دیر شروع می‌کند. اگر بازار بسته است ولی جلسه‌ی بعدی تا ۲۰ ساعت دیگر
+    # باز می‌شود (شب‌های روز کاری)، سفارش‌ها ثبت می‌شوند و Alpaca آن‌ها را در بازگشایی بعدی اجرا می‌کند.
+    queued = False
+    if not clock.get('is_open'):
+        try:
+            nxt = dt.datetime.fromisoformat(clock['next_open'].replace('Z', '+00:00'))
+            now = dt.datetime.fromisoformat(clock['timestamp'].replace('Z', '+00:00'))
+            queued = (nxt - now).total_seconds() < 20 * 3600
+        except Exception:
+            queued = False
+    market_open = bool(clock.get('is_open')) or queued or DRY or '--force' in sys.argv   # آخر هفته: فقط گزارش
     base = rules['source_url'].rstrip('/')
     events = [json.loads(l) for l in requests.get(base + '/events.jsonl', timeout=30).text.splitlines() if l.strip()]
     lj = requests.get(base + '/leaders.json', timeout=30).json()
@@ -223,6 +233,8 @@ def main():
     done_buys, done_sells, removed_now, notes = [], [], [], []
 
     plans, skipped = [], []
+    if queued:
+        notes.append('بازار بسته بود؛ سفارش‌ها در بازگشایی جلسه‌ی بعدی اجرا می‌شوند')
     if not market_open:
         notes.append('بازار امروز بسته است؛ فقط گزارش، بدون معامله')
         report(state, sel, prices, done_buys, done_sells, removed_now, skipped, notes, today, events)
