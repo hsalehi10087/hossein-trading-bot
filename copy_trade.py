@@ -308,7 +308,7 @@ def main():
     return 0
 
 
-NAMES = {'gld_trend': '🥇 روند طلا', 'qqq_trend': '📈 هسته‌ی QQQ', 'legacy_1h': '⏱ ربات ساعتی', 'copy_trade': '👥 کپی ترید'}
+NAMES = {'gld_trend': '🥇 روند طلا', 'qqq_trend': '📈 هسته‌ی QQQ', 'legacy_1h': '⏱ ربات ساعتی', 'copy_trade': '👥 کپی ترید', 'btc_momentum': '₿ مومنتوم بیت‌کوین'}
 
 
 def account_section(prules):
