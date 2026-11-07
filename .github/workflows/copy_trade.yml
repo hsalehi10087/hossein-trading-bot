@@ -12,6 +12,7 @@ on:
 
 permissions:
   contents: write
+  actions: read
 
 concurrency:
   group: portfolio
@@ -32,6 +33,7 @@ jobs:
       - run: scripts/datastore.sh pull
       - name: Copy trades through the conductor
         env:
+          GH_TOKEN: ${{ github.token }}
           ALPACA_KEY: ${{ secrets.ALPACA_KEY }}
           ALPACA_SECRET: ${{ secrets.ALPACA_SECRET }}
           ALPACA_ENDPOINT: ${{ secrets.ALPACA_ENDPOINT }}
@@ -40,6 +42,12 @@ jobs:
           DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
         run: |
           echo "::add-mask::$TELEGRAM_BOT_TOKEN"
+          # اجرای دیرکرده‌ی زمان‌بندی GitHub: اگر امروز اجرای سروقت (dispatch) انجام شده، تکرار نکن
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            n=$(gh api "repos/${{ github.repository }}/actions/workflows/copy_trade.yml/runs?event=workflow_dispatch&created=>=$(date -u +%F)&per_page=20" \
+                 --jq '[.workflow_runs[]|select(.conclusion=="success" or .status=="in_progress")]|length')
+            if [ "$n" -gt 0 ]; then echo "already ran on time today — skip"; exit 0; fi
+          fi
           python3 copy_trade.py
       - if: always()
         run: scripts/datastore.sh push "👥 copy trade $(date -u +%F)"
