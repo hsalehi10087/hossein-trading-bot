@@ -1,0 +1,693 @@
+{
+ "processed": [
+  "13F|13F:Bill & Melinda Gates Foundation Trust|MSGS|sell|2026-10-28",
+  "13F|13F:First Eagle Investment Management|ACA|sell|2026-10-24",
+  "13F|13F:Francis Chou - Chou Associates|ATKR|sell|2026-10-21",
+  "ARK|ARK:Cathie Wood|AVGO|sell|2026-11-06",
+  "ARK|ARK:Cathie Wood|CBRS|buy|2026-11-06",
+  "ARK|ARK:Cathie Wood|CMPS|buy|2026-11-04",
+  "ARK|ARK:Cathie Wood|IAM|buy|2026-11-06",
+  "ARK|ARK:Cathie Wood|NRIX|buy|2026-11-05",
+  "ARK|ARK:Cathie Wood|NVDA|buy|2026-11-06",
+  "ARK|ARK:Cathie Wood|PSNL|sell|2026-11-04",
+  "ARK|ARK:Cathie Wood|PSNL|sell|2026-11-05",
+  "ARK|ARK:Cathie Wood|PSNL|sell|2026-11-06",
+  "ARK|ARK:Cathie Wood|RKLB|buy|2026-11-06",
+  "ARK|ARK:Cathie Wood|VCYT|buy|2026-11-06",
+  "Insiders|Insiders:Cluster buys|ACN|buy|2026-10-26",
+  "Insiders|Insiders:Cluster buys|AN|buy|2026-11-03",
+  "Insiders|Insiders:Cluster buys|ATEC|buy|2026-10-30",
+  "Insiders|Insiders:Cluster buys|BLX|buy|2026-10-30",
+  "Insiders|Insiders:Cluster buys|BPRE|buy|2026-10-26",
+  "Insiders|Insiders:Cluster buys|BXMT|buy|2026-11-04",
+  "Insiders|Insiders:Cluster buys|CRAFX|buy|2026-10-21",
+  "Insiders|Insiders:Cluster buys|ENPH|buy|2026-11-02",
+  "Insiders|Insiders:Cluster buys|FBRT|buy|2026-11-03",
+  "Insiders|Insiders:Cluster buys|HGV|buy|2026-11-03",
+  "Insiders|Insiders:Cluster buys|KMT|buy|2026-11-05",
+  "Insiders|Insiders:Cluster buys|KYN|buy|2026-11-05",
+  "Insiders|Insiders:Cluster buys|LBRT|buy|2026-11-03",
+  "Insiders|Insiders:Cluster buys|LBTY|buy|2026-11-04",
+  "Insiders|Insiders:Cluster buys|MTDR|buy|2026-11-05",
+  "Insiders|Insiders:Cluster buys|OCFC|buy|2026-10-30",
+  "Insiders|Insiders:Cluster buys|RAPP|buy|2026-10-23",
+  "Insiders|Insiders:Cluster buys|STC|buy|2026-10-23",
+  "Insiders|Insiders:Cluster buys|THRM|buy|2026-10-23",
+  "Insiders|Insiders:Cluster buys|TRNS|buy|2026-11-05",
+  "Insiders|Insiders:Cluster buys|TTMI|buy|2026-10-28",
+  "Insiders|Insiders:Cluster buys|TTMI|buy|2026-11-05",
+  "Insiders|Insiders:Cluster buys|UPBD|buy|2026-11-02",
+  "Insiders|Insiders:Cluster buys|UPBD|buy|2026-11-03"
+ ],
+ "lots": [
+  {
+   "id": "Insiders|Insiders:Cluster buys|RAPP|buy|2026-10-23",
+   "leader": "Insiders:مدیران RAPP",
+   "ticker": "RAPP",
+   "qty": 20,
+   "entry": 24.445,
+   "date": "2026-11-09",
+   "spy_entry": 741.75,
+   "source": "Insiders"
+  },
+  {
+   "id": "Insiders|Insiders:Cluster buys|TTMI|buy|2026-10-28",
+   "leader": "Insiders:مدیران TTMI",
+   "ticker": "TTMI",
+   "qty": 7,
+   "entry": 66.525,
+   "date": "2026-11-09",
+   "spy_entry": 741.75,
+   "source": "Insiders"
+  },
+  {
+   "id": "Insiders|Insiders:Cluster buys|BPRE|buy|2026-10-26",
+   "leader": "Insiders:مدیران BPRE",
+   "ticker": "BPRE",
+   "qty": 40,
+   "entry": 12.21,
+   "date": "2026-11-09",
+   "spy_entry": 741.75,
+   "source": "Insiders"
+  },
+  {
+   "id": "Insiders|Insiders:Cluster buys|ACN|buy|2026-10-26",
+   "leader": "Insiders:مدیران ACN",
+   "ticker": "ACN",
+   "qty": 1,
+   "entry": 260.51,
+   "date": "2026-11-09",
+   "spy_entry": 741.75,
+   "source": "Insiders"
+  },
+  {
+   "id": "Insiders|Insiders:Cluster buys|STC|buy|2026-10-23",
+   "leader": "Insiders:مدیران STC",
+   "ticker": "STC",
+   "qty": 10,
+   "entry": 46.93,
+   "date": "2026-11-09",
+   "spy_entry": 741.75,
+   "source": "Insiders"
+  },
+  {
+   "id": "Insiders|Insiders:Cluster buys|THRM|buy|2026-10-23",
+   "leader": "Insiders:مدیران THRM",
+   "ticker": "THRM",
+   "qty": 16,
+   "entry": 29.47,
+   "date": "2026-11-09",
+   "spy_entry": 741.75,
+   "source": "Insiders"
+  },
+  {
+   "id": "Insiders|Insiders:Cluster buys|OCFC|buy|2026-10-30",
+   "leader": "Insiders:مدیران OCFC",
+   "ticker": "OCFC",
+   "qty": 27,
+   "entry": 18.135,
+   "date": "2026-11-09",
+   "spy_entry": 741.75,
+   "source": "Insiders"
+  },
+  {
+   "id": "Insiders|Insiders:Cluster buys|BLX|buy|2026-10-30",
+   "leader": "Insiders:مدیران BLX",
+   "ticker": "BLX",
+   "qty": 10,
+   "entry": 49.98,
+   "date": "2026-11-09",
+   "spy_entry": 741.75,
+   "source": "Insiders"
+  },
+  {
+   "id": "Insiders|Insiders:Cluster buys|ATEC|buy|2026-10-30",
+   "leader": "Insiders:مدیران ATEC",
+   "ticker": "ATEC",
+   "qty": 67,
+   "entry": 7.435,
+   "date": "2026-11-09",
+   "spy_entry": 741.75,
+   "source": "Insiders"
+  },
+  {
+   "id": "ARK|ARK:Cathie Wood|CMPS|buy|2026-11-04",
+   "leader": "ARK:Cathie Wood",
+   "ticker": "CMPS",
+   "qty": 58,
+   "entry": 8.615,
+   "date": "2026-11-09",
+   "spy_entry": 741.75,
+   "source": "ARK"
+  },
+  {
+   "id": "Insiders|Insiders:Cluster buys|ENPH|buy|2026-11-02",
+   "leader": "Insiders:مدیران ENPH",
+   "ticker": "ENPH",
+   "qty": 17,
+   "entry": 28.47,
+   "date": "2026-11-09",
+   "spy_entry": 741.75,
+   "source": "Insiders"
+  },
+  {
+   "id": "ARK|ARK:Cathie Wood|NRIX|buy|2026-11-05",
+   "leader": "ARK:Cathie Wood",
+   "ticker": "NRIX",
+   "qty": 32,
+   "entry": 15.29,
+   "date": "2026-11-09",
+   "spy_entry": 741.75,
+   "source": "ARK"
+  },
+  {
+   "id": "Insiders|Insiders:Cluster buys|HGV|buy|2026-11-03",
+   "leader": "Insiders:مدیران HGV",
+   "ticker": "HGV",
+   "qty": 11,
+   "entry": 43.97,
+   "date": "2026-11-09",
+   "spy_entry": 741.75,
+   "source": "Insiders"
+  },
+  {
+   "id": "Insiders|Insiders:Cluster buys|UPBD|buy|2026-11-02",
+   "leader": "Insiders:مدیران UPBD",
+   "ticker": "UPBD",
+   "qty": 20,
+   "entry": 24.25,
+   "date": "2026-11-09",
+   "spy_entry": 741.75,
+   "source": "Insiders"
+  },
+  {
+   "id": "Insiders|Insiders:Cluster buys|AN|buy|2026-11-03",
+   "leader": "Insiders:مدیران AN",
+   "ticker": "AN",
+   "qty": 2,
+   "entry": 184.175,
+   "date": "2026-11-09",
+   "spy_entry": 741.75,
+   "source": "Insiders"
+  },
+  {
+   "id": "ARK|ARK:Cathie Wood|CBRS|buy|2026-11-06",
+   "leader": "ARK:Cathie Wood",
+   "ticker": "CBRS",
+   "qty": 5,
+   "entry": 89.815,
+   "date": "2026-11-09",
+   "spy_entry": 741.75,
+   "source": "ARK"
+  },
+  {
+   "id": "Insiders|Insiders:Cluster buys|MTDR|buy|2026-11-05",
+   "leader": "Insiders:مدیران MTDR",
+   "ticker": "MTDR",
+   "qty": 9,
+   "entry": 50.39,
+   "date": "2026-11-09",
+   "spy_entry": 741.75,
+   "source": "Insiders"
+  },
+  {
+   "id": "Insiders|Insiders:Cluster buys|BXMT|buy|2026-11-04",
+   "leader": "Insiders:مدیران BXMT",
+   "ticker": "BXMT",
+   "qty": 44,
+   "entry": 11.165,
+   "date": "2026-11-09",
+   "spy_entry": 741.75,
+   "source": "Insiders"
+  },
+  {
+   "id": "Insiders|Insiders:Cluster buys|LBRT|buy|2026-11-03",
+   "leader": "Insiders:مدیران LBRT",
+   "ticker": "LBRT",
+   "qty": 41,
+   "entry": 11.955,
+   "date": "2026-11-09",
+   "spy_entry": 741.75,
+   "source": "Insiders"
+  },
+  {
+   "id": "Insiders|Insiders:Cluster buys|FBRT|buy|2026-11-03",
+   "leader": "Insiders:مدیران FBRT",
+   "ticker": "FBRT",
+   "qty": 80,
+   "entry": 6.2,
+   "date": "2026-11-09",
+   "spy_entry": 741.75,
+   "source": "Insiders"
+  },
+  {
+   "id": "Insiders|Insiders:Cluster buys|TRNS|buy|2026-11-05",
+   "leader": "Insiders:مدیران TRNS",
+   "ticker": "TRNS",
+   "qty": 4,
+   "entry": 101.57,
+   "date": "2026-11-09",
+   "spy_entry": 741.75,
+   "source": "Insiders"
+  },
+  {
+   "id": "Insiders|Insiders:Cluster buys|KYN|buy|2026-11-05",
+   "leader": "Insiders:مدیران KYN",
+   "ticker": "KYN",
+   "qty": 37,
+   "entry": 13.21,
+   "date": "2026-11-09",
+   "spy_entry": 741.75,
+   "source": "Insiders"
+  },
+  {
+   "id": "Insiders|Insiders:Cluster buys|KMT|buy|2026-11-05",
+   "leader": "Insiders:مدیران KMT",
+   "ticker": "KMT",
+   "qty": 21,
+   "entry": 23.045,
+   "date": "2026-11-09",
+   "spy_entry": 741.75,
+   "source": "Insiders"
+  }
+ ],
+ "closed": [],
+ "leaders": {
+  "13F:Abrams Bison Investments": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "13F:AKO Capital": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "13F:Alex Roepers - Atlantic Investment Management": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "13F:AltaRock Partners": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "13F:Arnold Van Den Berg - Century Management": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "13F:Bill & Melinda Gates Foundation Trust": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "13F:Bill Ackman - Pershing Square Capital Management": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "13F:Bill Miller - Miller Value Partners": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "13F:Bill Nygren - Oakmark Funds": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "13F:Bruce Berkowitz - Fairholme Capital": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "13F:Bryan Lawrence - Oakcliff Capital": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "13F:Carl Icahn - Icahn Capital Management": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "13F:Chase Coleman - Tiger Global Management": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "13F:Chris Hohn - TCI Fund Management": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "13F:Christopher Bloomstran - Semper Augustus": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "13F:Christopher Davis - Davis Advisors": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "13F:Chuck Akre - Akre Capital Management": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "13F:Clifford Sosin - CAS Investment Partners": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "13F:Daniel Loeb - Third Point": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "13F:David Abrams - Abrams Capital Management": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "13F:David Einhorn - Greenlight Capital": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "13F:David Katz - Matrix Asset Advisors": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "13F:David Rolfe - Wedgewood Partners": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "13F:David Tepper - Appaloosa Management": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "13F:Dennis Hong - ShawSpring Partners": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "13F:Duan Yongping - H&H International Investment": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "13F:First Pacific Advisors": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "13F:Francis Chou - Chou Associates": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "ARK:Cathie Wood": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "Insiders:Cluster buys": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "Insiders:مدیران RAPP": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "Insiders:مدیران TTMI": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "Insiders:مدیران BPRE": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "Insiders:مدیران ACN": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "Insiders:مدیران STC": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "Insiders:مدیران THRM": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "Insiders:مدیران CRAFX": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "Insiders:مدیران OCFC": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "Insiders:مدیران BLX": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "Insiders:مدیران ATEC": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "Insiders:مدیران ENPH": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "Insiders:مدیران LBTY": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "Insiders:مدیران HGV": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "Insiders:مدیران UPBD": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "Insiders:مدیران AN": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "Insiders:مدیران MTDR": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "Insiders:مدیران BXMT": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "Insiders:مدیران LBRT": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "Insiders:مدیران FBRT": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "Insiders:مدیران TRNS": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "Insiders:مدیران KYN": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "Insiders:مدیران KMT": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  }
+ }
+}
