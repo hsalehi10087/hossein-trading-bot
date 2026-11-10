@@ -1,7 +1,7 @@
 # قوانین هماهنگ‌کننده‌ی سبد — تقسیم سرمایه، صاحب هر نماد و حدود کل حساب.
 # مثل بقیه‌ی قوانین فقط با Pull Request تغییر می‌کند (version+1).
-version: 4
-approved: '2026-11-07'
+version: 5
+approved: '2026-11-10'
 
 sleeves:
   gld_trend:            # ربات روند طلا
@@ -24,6 +24,10 @@ sleeves:
   btc_momentum:         # مومنتوم ۲۸ روزه‌ی بیت‌کوین (قواعد در rules/btc_momentum.yaml)
     capital_usd: 5000
     symbols: [BTCUSD, BTC/USD]
+    buys_allowed: true
+  eth_weekend:          # خرید اتریوم آخر هفته (قواعد در rules/eth_weekend.yaml)
+    capital_usd: 5000
+    symbols: [ETHUSD, ETH/USD]
     buys_allowed: true
 
 account:
