@@ -35,6 +35,7 @@ DATA = 'https://data.alpaca.markets/v2'
 H = {'APCA-API-KEY-ID': os.getenv('ALPACA_KEY', ''), 'APCA-API-SECRET-KEY': os.getenv('ALPACA_SECRET', '')}
 SLEEVE = 'copy_trade'
 INSIDER_GROUP = 'Insiders:Cluster buys'
+CONGRESS_GROUP = 'Congress:Members'
 SRC_FA = {'13F': '🏦', 'ARK': '🚀', 'Congress': '🏛', 'Insiders': '👔'}
 DRY = os.getenv('DRY_RUN', 'false').lower() == 'true'
 
@@ -217,7 +218,11 @@ def main():
                 e['leader'] = f"Insiders:مدیران {e['ticker']}"
 
     def group(name):
-        return INSIDER_GROUP if name.startswith('Insiders:') else name
+        if name.startswith('Insiders:'):
+            return INSIDER_GROUP
+        if name.startswith('Congress:') and name != CONGRESS_GROUP and CONGRESS_GROUP in sel:
+            return CONGRESS_GROUP          # هر نماینده یک تریدر جدا، زیر گروه کنگره (گزارش رسمی PTR)
+        return name
 
     def ok(name):
         g = group(name)
@@ -329,6 +334,8 @@ def account_section(prules):
          f"نقد: {fa(f'{float(acct["cash"]):,.0f}')}$"]
     for name, s in prules['sleeves'].items():
         v = by.get(name, {'value': 0.0, 'upl': 0.0, 'day': 0.0})
+        if v['value'] > s['capital_usd'] * 1.25:
+            L.append(f"⚠️ {NAMES.get(name, name)} {fa(f'{v['value'] / s['capital_usd'] * 100 - 100:.0f}')}٪ بیشتر از سرمایه‌ی تعیین‌شده است (رشد قیمت)؛ تعادل دوباره در بازبینی بعدی")
         L.append(f"{NAMES.get(name, name)}: در بازار {fa(f'{v['value']:,.0f}')} از {fa(f'{s['capital_usd']:,}')}$ | "
                  f"سود/زیان باز {fa(f'{v['upl']:+,.0f}')}$ | امروز {fa(f'{v['day']:+,.0f}')}$")
     if 'بی‌صاحب' in by:

@@ -30,6 +30,9 @@ def validate(r):
             errs.append(f'missing {k}')
     if errs:
         return errs
+    msp = r['account'].get('max_symbol_pct', 1.0)
+    if not (0.05 <= msp <= 1.0):
+        errs.append('account.max_symbol_pct out of range 0.05..1')
     owner = {}
     for name, s in r['sleeves'].items():
         for k in ('capital_usd', 'symbols', 'buys_allowed'):
@@ -116,13 +119,17 @@ class Conductor:
         room_sleeve = cap - self.sleeve_value(sleeve)
         room_cash = self.cash - self.a['reserve_cash_usd'] if self.a['no_margin'] else float('inf')
         room_gross = self.a['max_gross_exposure'] * self.equity - self.gross()
-        room = min(room_sleeve, room_cash, room_gross)
+        room_symbol = self.a.get('max_symbol_pct', 1.0) * self.equity - self.pos.get(sym, {}).get('value', 0.0)
+        room = min(room_sleeve, room_cash, room_gross, room_symbol)
         fit = max(0, min(qty, math.floor(room / px))) if px > 0 else 0
         checks += [('buys_allowed', bool(s and s['buys_allowed']), str(s and s['buys_allowed'])),
                    ('kill_switch', not self.kill, f'kill={self.kill}'),
                    ('sleeve_budget', room_sleeve >= px, f'room {room_sleeve:,.0f}$ (brake={self.brake})'),
                    ('cash_no_margin', room_cash >= px, f'room {room_cash:,.0f}$'),
                    ('gross_exposure', room_gross >= px, f'room {room_gross:,.0f}$'),
+                   ('symbol_cap', room_symbol >= px, f'room {room_symbol:,.0f}$ (max {self.a.get("max_symbol_pct", 1.0):.0%} of equity per symbol)'),
+                   ('not_blocked', sym not in (self.a.get('blocked_symbols') or []), sym),
+                   ('no_options', not (OCC.match(sym) and self.a.get('options_blocked', False)), sym),
                    ('fits', fit >= 1, f'{fit}/{qty}')]
         ok = all(c[1] for c in checks)
         q = fit if ok else 0
