@@ -1,6 +1,6 @@
 # قوانین هماهنگ‌کننده‌ی سبد — تقسیم سرمایه، صاحب هر نماد و حدود کل حساب.
 # مثل بقیه‌ی قوانین فقط با Pull Request تغییر می‌کند (version+1).
-version: 5
+version: 6
 approved: '2026-11-10'
 
 sleeves:
@@ -28,6 +28,18 @@ sleeves:
   eth_weekend:          # خرید اتریوم آخر هفته (قواعد در rules/eth_weekend.yaml)
     capital_usd: 5000
     symbols: [ETHUSD, ETH/USD]
+    buys_allowed: true
+  spy_band:             # SPY با باند ±۲٪ دور میانگین ۲۰۰ روزه (rules/ma_timing.yaml)
+    capital_usd: 5000
+    symbols: [SPY]
+    buys_allowed: true
+  spy_10m:              # میانگین ۱۰ ماهه روی S&P 500؛ معامله روی VOO (rules/ma_timing.yaml)
+    capital_usd: 5000
+    symbols: [VOO]
+    buys_allowed: true
+  qqq_200:              # میانگین ۲۰۰ روزه‌ی QQQ؛ معامله روی QQQM (rules/ma_timing.yaml)
+    capital_usd: 5000
+    symbols: [QQQM]
     buys_allowed: true
 
 account:
