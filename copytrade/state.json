@@ -8,10 +8,12 @@
   "ARK|ARK:Cathie Wood|CMPS|buy|2026-11-04",
   "ARK|ARK:Cathie Wood|IAM|buy|2026-11-06",
   "ARK|ARK:Cathie Wood|NRIX|buy|2026-11-05",
+  "ARK|ARK:Cathie Wood|NTRA|buy|2026-11-09",
   "ARK|ARK:Cathie Wood|NVDA|buy|2026-11-06",
   "ARK|ARK:Cathie Wood|PSNL|sell|2026-11-04",
   "ARK|ARK:Cathie Wood|PSNL|sell|2026-11-05",
   "ARK|ARK:Cathie Wood|PSNL|sell|2026-11-06",
+  "ARK|ARK:Cathie Wood|PSNL|sell|2026-11-09",
   "ARK|ARK:Cathie Wood|RKLB|buy|2026-11-06",
   "ARK|ARK:Cathie Wood|VCYT|buy|2026-11-06",
   "Insiders|Insiders:Cluster buys|ACN|buy|2026-10-26",
@@ -23,17 +25,20 @@
   "Insiders|Insiders:Cluster buys|CRAFX|buy|2026-10-21",
   "Insiders|Insiders:Cluster buys|ENPH|buy|2026-11-02",
   "Insiders|Insiders:Cluster buys|FBRT|buy|2026-11-03",
+  "Insiders|Insiders:Cluster buys|GLXY|buy|2026-11-05",
   "Insiders|Insiders:Cluster buys|HGV|buy|2026-11-03",
   "Insiders|Insiders:Cluster buys|KMT|buy|2026-11-05",
   "Insiders|Insiders:Cluster buys|KYN|buy|2026-11-05",
   "Insiders|Insiders:Cluster buys|LBRT|buy|2026-11-03",
   "Insiders|Insiders:Cluster buys|LBTY|buy|2026-11-04",
   "Insiders|Insiders:Cluster buys|MTDR|buy|2026-11-05",
+  "Insiders|Insiders:Cluster buys|NTHI|buy|2026-11-05",
   "Insiders|Insiders:Cluster buys|OCFC|buy|2026-10-30",
   "Insiders|Insiders:Cluster buys|RAPP|buy|2026-10-23",
   "Insiders|Insiders:Cluster buys|STC|buy|2026-10-23",
   "Insiders|Insiders:Cluster buys|THRM|buy|2026-10-23",
   "Insiders|Insiders:Cluster buys|TRNS|buy|2026-11-05",
+  "Insiders|Insiders:Cluster buys|TSM|buy|2026-11-05",
   "Insiders|Insiders:Cluster buys|TTMI|buy|2026-10-28",
   "Insiders|Insiders:Cluster buys|TTMI|buy|2026-11-05",
   "Insiders|Insiders:Cluster buys|UPBD|buy|2026-11-02",
@@ -268,6 +273,16 @@
    "entry": 23.045,
    "date": "2026-11-09",
    "spy_entry": 741.75,
+   "source": "Insiders"
+  },
+  {
+   "id": "Insiders|Insiders:Cluster buys|GLXY|buy|2026-11-05",
+   "leader": "Insiders:مدیران GLXY",
+   "ticker": "GLXY",
+   "qty": 1,
+   "entry": 14.5,
+   "date": "2026-11-10",
+   "spy_entry": 747.95,
    "source": "Insiders"
   }
  ],
@@ -682,6 +697,30 @@
    "removed_date": null
   },
   "Insiders:مدیران KMT": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "Insiders:مدیران TSM": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "Insiders:مدیران NTHI": {
+   "consec": 0,
+   "losses": 0,
+   "wins": 0,
+   "removed": false,
+   "reason": "",
+   "removed_date": null
+  },
+  "Insiders:مدیران GLXY": {
    "consec": 0,
    "losses": 0,
    "wins": 0,
