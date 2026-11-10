@@ -92,3 +92,16 @@ def test_sequential_orders_share_cash(tmp_path):
     q1, _ = c.approve('gld_trend', {'symbol': 'GLD', 'side': 'buy', 'qty': 20, 'price': 380})
     q2, _ = c.approve('qqq_trend', {'symbol': 'QQQ', 'side': 'buy', 'qty': 27, 'price': 720})
     assert q1 == 20 and q2 == (10000 - 1000 - 20 * 380) // 720
+
+
+def test_symbol_cap_and_blocks(tmp_path):
+    big = copy.deepcopy(R); big['sleeves']['copy_trade']['capital_usd'] = 60000
+    c = PC.Conductor(big, {'equity': 100000, 'cash': 90000},
+                     [{'symbol': 'COST', 'qty': '100', 'current_price': '290', 'market_value': '29000'}],
+                     str(tmp_path / 's1.json'))
+    q, _ = c.approve('copy_trade', {'symbol': 'COST', 'side': 'buy', 'qty': 20, 'price': 290})
+    assert q == 3                                                   # فقط تا سقف ۳۰٪ حساب
+    r = copy.deepcopy(R); r['account']['blocked_symbols'] = ['TSLA']
+    c2 = PC.Conductor(r, {'equity': 100000, 'cash': 90000}, [], str(tmp_path / 's2.json'))
+    assert c2.approve('copy_trade', {'symbol': 'TSLA', 'side': 'buy', 'qty': 1, 'price': 400})[0] == 0
+    assert c2.approve('legacy_1h', {'symbol': 'KRMN261120C00035000', 'side': 'buy', 'qty': 1, 'price': 300})[0] == 0

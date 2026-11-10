@@ -1,0 +1,44 @@
+name: 🧮 Monthly portfolio risk report (correlation, VaR, drawdown)
+
+on:
+  schedule:
+    - cron: '0 6 * * 0'     # هر یکشنبه؛ پیام فقط در اولین یکشنبه‌ی ماه (روز ۱ تا ۷)
+  workflow_dispatch:
+    inputs:
+      force_send:
+        description: 'ارسال پیام همین الان (true/false)'
+        required: false
+        default: 'false'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: portfolio
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -q requests pyyaml pytest pandas numpy yfinance
+      - run: python -m pytest -q tests
+      - run: scripts/datastore.sh pull
+      - name: Risk report
+        env:
+          ALPACA_KEY: ${{ secrets.ALPACA_KEY }}
+          ALPACA_SECRET: ${{ secrets.ALPACA_SECRET }}
+          ALPACA_ENDPOINT: ${{ secrets.ALPACA_ENDPOINT }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          FORCE_SEND: ${{ github.event.inputs.force_send || 'false' }}
+        run: |
+          echo "::add-mask::$TELEGRAM_BOT_TOKEN"
+          python3 risk_report.py
+      - if: always()
+        run: scripts/datastore.sh push "🧮 risk report $(date -u +%F)"
