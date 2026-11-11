@@ -21,9 +21,9 @@ ENDPOINT = (os.getenv('ALPACA_ENDPOINT') or 'https://paper-api.alpaca.markets/v2
 if not ENDPOINT.endswith('/v2'):
     ENDPOINT += '/v2'
 H = {'APCA-API-KEY-ID': os.getenv('ALPACA_KEY', ''), 'APCA-API-SECRET-KEY': os.getenv('ALPACA_SECRET', '')}
-PROXY = {'gld_trend': 'GLD', 'qqq_trend': 'QQQ', 'spy_band': 'SPY', 'spy_10m': 'VOO', 'qqq_200': 'QQQM',
+PROXY = {'gld_trend': 'GLD', 'qqq_trend': 'QQQ', 'dbmf_band': 'DBMF', 'spy_10m': 'VOO', 'qqq_200': 'QQQM',
          'btc_momentum': 'BTC-USD', 'eth_weekend': 'ETH-USD'}
-NAMES = {'gld_trend': 'طلا', 'qqq_trend': 'روند QQQ', 'spy_band': 'باند SPY', 'spy_10m': '۱۰ ماهه VOO',
+NAMES = {'gld_trend': 'طلا', 'qqq_trend': 'روند QQQ', 'dbmf_band': 'DBMF روند', 'spy_10m': '۱۰ ماهه VOO',
          'qqq_200': 'QQQ۲۰۰', 'btc_momentum': 'مومنتوم BTC', 'eth_weekend': 'آخر هفته ETH'}
 
 

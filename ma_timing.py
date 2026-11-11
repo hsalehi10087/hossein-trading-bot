@@ -77,6 +77,11 @@ def main():
     pos = {p['symbol']: float(p['qty']) for p in positions}
     cond = PC.Conductor(prules, acct, positions, os.path.join(STORE, 'portfolio', 'state.json'))
     log, msgs = [], []
+    rp = os.path.join(STORE, 'ma_timing', 'retired.json')
+    try:
+        retired = json.load(open(rp))
+    except Exception:
+        retired = {}
     for s in rules['strategies']:
         c = closes[s['signal']].dropna()
         if len(c) < s['sma'] + 5 or (session and c.index[-1].date() < session):
@@ -111,7 +116,21 @@ def main():
                             f"(حدود {qty * px:,.0f}$)\nدلیل: {why}" + (' (آزمایشی، بدون سفارش)' if DRY else ''))
         rec['action'] = side if side and qty > 0 else None
         log.append(rec)
+        ret = s.get('retire')                      # فروش یک‌باره‌ی نماد ربات قبلی همین سرمایه
+        if ret and pos.get(ret, 0) > 0 and ret not in retired:
+            coid = f"mat-retire-{ret}-{rec['session']}"
+            ok = True
+            if not DRY:
+                r = requests.post(ENDPOINT + '/orders', headers=H, timeout=30,
+                                  json={'symbol': ret, 'qty': str(pos[ret]), 'side': 'sell', 'type': 'market',
+                                        'time_in_force': 'day', 'client_order_id': coid})
+                ok = r.status_code in (200, 201)
+                log.append({'sleeve': s['sleeve'], 'retire': ret, 'order': f'{r.status_code} {r.text[:150]}'})
+            if ok:
+                retired[ret] = rec['session']
+                msgs.append(f"📐 <b>{s['name_fa']}</b>\nفروش {pos[ret]:g} واحد {ret} (ربات قبلی این سرمایه) برای جابه‌جایی به {s['trade']}")
     os.makedirs(os.path.join(STORE, 'ma_timing'), exist_ok=True)
+    json.dump(retired, open(rp, 'w'))
     with open(os.path.join(STORE, 'ma_timing', 'log.jsonl'), 'a', encoding='utf-8') as f:
         for r in log:
             f.write(json.dumps(r, ensure_ascii=False) + '\n')

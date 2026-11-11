@@ -4,9 +4,9 @@ from engine import conductor as PC
 
 def test_rules_and_owners():
     r = M.load_rules()
-    assert {s['sleeve'] for s in r['strategies']} == {'spy_band', 'spy_10m', 'qqq_200'}
+    assert {s['sleeve'] for s in r['strategies']} == {'dbmf_band', 'spy_10m', 'qqq_200'}
     R = PC.load()
-    assert PC.owner_of(R, 'SPY') == 'spy_band' and PC.owner_of(R, 'VOO') == 'spy_10m' and PC.owner_of(R, 'QQQM') == 'qqq_200'
+    assert PC.owner_of(R, 'DBMF') == 'dbmf_band' and PC.owner_of(R, 'VOO') == 'spy_10m' and PC.owner_of(R, 'QQQM') == 'qqq_200'
     assert PC.owner_of(R, 'QQQ') == 'qqq_trend'
 
 
