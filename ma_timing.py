@@ -126,8 +126,9 @@ def main():
                                         'time_in_force': 'day', 'client_order_id': coid})
                 ok = r.status_code in (200, 201)
                 log.append({'sleeve': s['sleeve'], 'retire': ret, 'order': f'{r.status_code} {r.text[:150]}'})
-            if ok:
+            if ok and not DRY:
                 retired[ret] = rec['session']
+            if ok:
                 msgs.append(f"📐 <b>{s['name_fa']}</b>\nفروش {pos[ret]:g} واحد {ret} (ربات قبلی این سرمایه) برای جابه‌جایی به {s['trade']}")
     os.makedirs(os.path.join(STORE, 'ma_timing'), exist_ok=True)
     json.dump(retired, open(rp, 'w'))
