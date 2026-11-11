@@ -7,3 +7,6 @@
 {"sleeve": "spy_band", "session": "2026-11-10", "signal_close": 749.92, "sma": 728.3, "gap_pct": 2.97, "inside": true, "held": 6.0, "action": null}
 {"sleeve": "spy_10m", "session": "2026-11-10", "signal_close": 749.92, "sma": 726.2, "gap_pct": 3.27, "inside": true, "held": 7.0, "action": null}
 {"sleeve": "qqq_200", "session": "2026-11-10", "signal_close": 674.76, "sma": 680.34, "gap_pct": -0.82, "inside": false, "held": 0.0, "action": null}
+{"sleeve": "dbmf_band", "session": "2026-11-10", "signal_close": 31.6, "sma": 30.9, "gap_pct": 2.27, "inside": true, "held": 0.0, "action": "buy"}
+{"sleeve": "spy_10m", "session": "2026-11-10", "signal_close": 749.92, "sma": 726.2, "gap_pct": 3.27, "inside": true, "held": 7.0, "action": null}
+{"sleeve": "qqq_200", "session": "2026-11-10", "signal_close": 674.76, "sma": 680.34, "gap_pct": -0.82, "inside": false, "held": 0.0, "action": null}
