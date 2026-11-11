@@ -1,7 +1,7 @@
 # قوانین هماهنگ‌کننده‌ی سبد — تقسیم سرمایه، صاحب هر نماد و حدود کل حساب.
 # مثل بقیه‌ی قوانین فقط با Pull Request تغییر می‌کند (version+1).
-version: 7
-approved: '2026-11-10'
+version: 8
+approved: '2026-11-11'
 
 sleeves:
   gld_trend:            # ربات روند طلا
@@ -29,9 +29,9 @@ sleeves:
     capital_usd: 5000
     symbols: [ETHUSD, ETH/USD]
     buys_allowed: true
-  spy_band:             # SPY با باند ±۲٪ دور میانگین ۲۰۰ روزه (rules/ma_timing.yaml)
+  dbmf_band:             # DBMF (روند آتی‌ها) با باند ±۲٪؛ جایگزین باند SPY (rules/ma_timing.yaml)
     capital_usd: 5000
-    symbols: [SPY]
+    symbols: [DBMF]
     buys_allowed: true
   spy_10m:              # میانگین ۱۰ ماهه روی S&P 500؛ معامله روی VOO (rules/ma_timing.yaml)
     capital_usd: 5000
