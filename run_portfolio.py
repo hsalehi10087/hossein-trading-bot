@@ -15,6 +15,7 @@ import gld_trend
 import qqq_trend
 from engine import conductor as PC
 from engine import data as D
+from engine import performance as PF
 
 STORE = os.getenv('DATASTORE', 'datastore')
 ENDPOINT = (os.getenv('ALPACA_ENDPOINT') or 'https://paper-api.alpaca.markets/v2').rstrip('/')
@@ -62,6 +63,20 @@ def main():
         v = by_sleeve.get(name, {'value': 0.0, 'upl': 0.0})
         lines.append(f"{NAMES.get(name, name)}: سرمایه {s['capital_usd']:,}$ | در بازار {v['value']:,.0f}$ | "
                      f"سود/زیان باز {v['upl']:+,.0f}$")
+    lines += ['', '<b>📊 بازده هر ربات از روز اول تا امروز:</b>']
+    try:
+        fills = PF.fetch_fills(get)
+        perf = PF.summarize(fills, pos2, lambda s: PC.owner_of(rules, s))
+        for name in rules['sleeves']:
+            if name in perf:
+                lines.append(PF.line(name, perf[name], NAMES))
+            else:
+                lines.append(f"{NAMES.get(name, name)}: هنوز معامله‌ای ثبت نشده")
+        if PF.UNOWNED in perf:
+            lines.append(PF.line(PF.UNOWNED, perf[PF.UNOWNED], NAMES))
+    except Exception as e:
+        traceback.print_exc()
+        lines.append(f'بازده ربات‌ها محاسبه نشد: {e!r}'[:200])
     if orphans:
         lines += ['', '<b>⚠️ موقعیت بی‌صاحب (هیچ رباتی مسئولش نیست):</b>'] + \
                  [f'{s}: {q:g} واحد، {v:,.0f}$' for s, q, v in orphans]
