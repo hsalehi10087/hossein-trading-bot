@@ -10,3 +10,7 @@
 {"sleeve": "dbmf_band", "session": "2026-11-10", "signal_close": 31.6, "sma": 30.9, "gap_pct": 2.27, "inside": true, "held": 0.0, "action": "buy"}
 {"sleeve": "spy_10m", "session": "2026-11-10", "signal_close": 749.92, "sma": 726.2, "gap_pct": 3.27, "inside": true, "held": 7.0, "action": null}
 {"sleeve": "qqq_200", "session": "2026-11-10", "signal_close": 674.76, "sma": 680.34, "gap_pct": -0.82, "inside": false, "held": 0.0, "action": null}
+{"sleeve": "dbmf_band", "session": "2026-11-10", "signal_close": 31.6, "sma": 30.9, "gap_pct": 2.27, "inside": true, "held": 0.0, "order": "200 {\"id\":\"8a524efe-ea35-4333-bd4b-bd5f73d52394\",\"client_order_id\":\"mat-dbmf_band-2026-11-10-buy\",\"created_at\":\"2026-11-11T02:32:52.096299422Z\",\"updated_a", "action": "buy"}
+{"sleeve": "dbmf_band", "retire": "SPY", "order": "200 {\"id\":\"b5d586b3-22b5-4ac6-b18c-c07038e60872\",\"client_order_id\":\"mat-retire-SPY-2026-11-10\",\"created_at\":\"2026-11-11T02:32:52.13095107Z\",\"updated_at\":\""}
+{"sleeve": "spy_10m", "session": "2026-11-10", "signal_close": 749.92, "sma": 726.2, "gap_pct": 3.27, "inside": true, "held": 7.0, "action": null}
+{"sleeve": "qqq_200", "session": "2026-11-10", "signal_close": 674.76, "sma": 680.34, "gap_pct": -0.82, "inside": false, "held": 0.0, "action": null}
