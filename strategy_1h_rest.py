@@ -328,7 +328,13 @@ def main():
                     else:
                         tot = pos['qty'] + qty
                         pos.update(avg=(pos['avg'] * pos['qty'] + price * qty) / tot, qty=tot, level=level)
-                    signals.append(f"✅ خرید پله‌ی {level}: <b>{sym}</b> × {qty} سهم به قیمت {price:.2f}$")
+                    p_after = state[sym]
+                    signals.append(
+                        f"✅ <b>خرید {sym}</b>: {qty} سهم × {price:.2f}$ = <b>{qty * price:,.0f}$</b>\n"
+                        f"   خرید مرحله‌ی {level} از ۳ " + (
+                            "(ورود اول؛ اگر قیمت ۰٫۸٪ و ۱٫۵٪ پایین‌تر آمد، دو بار دیگر می‌خرد)" if level == 1 else
+                            f"(قیمت پایین‌تر آمد؛ حالا {p_after['qty']:g} سهم با میانگین {p_after['avg']:.2f}$ = "
+                            f"{p_after['qty'] * p_after['avg']:,.0f}$)"))
                     line += f" | BUY_L{level} x{qty}"
                 else:
                     line += " | ❌ order failed"
@@ -338,8 +344,11 @@ def main():
             if ok:
                 pnl_pct = (price / avg - 1) * 100
                 icon = {'TP': '✅', 'TRAIL': '🔔', 'STOP': '🛑'}[what]
-                signals.append(f"{icon} فروش ({ {'TP': 'حد سود ۲٫۵٪', 'TRAIL': 'حد سود متحرک', 'STOP': 'حد ضرر ۳٪'}[what] }): "
-                               f"<b>{sym}</b> × {qty} سهم به قیمت {price:.2f}$ | سود/زیان {pnl_pct:+.2f}٪")
+                why = {'TP': 'رسیدن به حد سود ۲٫۵٪', 'TRAIL': 'حد سود متحرک', 'STOP': 'حد ضرر ۳٪'}[what]
+                signals.append(
+                    f"{icon} <b>فروش {sym}</b> ({why}): {qty:g} سهم × {price:.2f}$ = <b>{qty * price:,.0f}$</b>\n"
+                    f"   خرید شده بود به میانگین {avg:.2f}$ ({qty * avg:,.0f}$) → "
+                    f"<b>{'سود' if price >= avg else 'زیان'} {abs(qty * (price - avg)):,.0f}$</b> ({pnl_pct:+.1f}٪)")
                 line += f" | EXIT_{what} {pnl_pct:+.2f}%"
                 state.pop(sym, None)
             else:
