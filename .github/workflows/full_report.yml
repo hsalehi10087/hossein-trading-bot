@@ -1,0 +1,19 @@
+name: 💼 Full account report (read-only, manual)
+on:
+  workflow_dispatch:
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -q requests pyyaml
+      - name: Report (no orders, nothing committed)
+        env:
+          ALPACA_KEY: ${{ secrets.ALPACA_KEY }}
+          ALPACA_SECRET: ${{ secrets.ALPACA_SECRET }}
+          ALPACA_ENDPOINT: ${{ secrets.ALPACA_ENDPOINT }}
+        run: python3 full_report.py
