@@ -1,0 +1,35 @@
+{
+ "lots": [
+  {
+   "ticker": "CF",
+   "name": "CF Industries",
+   "qty": 4,
+   "entry": 124.96,
+   "peak": 124.96,
+   "date": "2026-11-13",
+   "signal_date": "2026-11-13",
+   "signal_price": 124.92,
+   "spy_entry": 760.83,
+   "order_id": "c6ac1d51-c105-4663-88ac-9a5d62da82d1",
+   "filled": false
+  },
+  {
+   "ticker": "VEEV",
+   "name": "Veeva Systems",
+   "qty": 1,
+   "entry": 302.43,
+   "peak": 302.43,
+   "date": "2026-11-13",
+   "signal_date": "2026-11-13",
+   "signal_price": 302.42,
+   "spy_entry": 760.83,
+   "order_id": "f7ce4c18-f770-4bbf-9f0f-a9f4c4d870af",
+   "filled": false
+  }
+ ],
+ "closed": [],
+ "processed": [
+  "2026-11-13:CF",
+  "2026-11-13:VEEV"
+ ]
+}
