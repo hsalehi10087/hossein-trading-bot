@@ -1,7 +1,7 @@
 # قوانین هماهنگ‌کننده‌ی سبد — تقسیم سرمایه، صاحب هر نماد و حدود کل حساب.
 # مثل بقیه‌ی قوانین فقط با Pull Request تغییر می‌کند (version+1).
-version: 8
-approved: '2026-11-11'
+version: 9
+approved: '2026-11-13'
 
 sleeves:
   gld_trend:            # ربات روند طلا
@@ -40,6 +40,11 @@ sleeves:
   qqq_200:              # میانگین ۲۰۰ روزه‌ی QQQ؛ معامله روی QQQM (rules/ma_timing.yaml)
     capital_usd: 5000
     symbols: [QQQM]
+    buys_allowed: true
+  growth_signal:        # خرید سیگنال‌های «احتمال رشد تکنیکال و بنیادی» آمریکا (قواعد در rules/growth_bot.yaml)
+    capital_usd: 10000
+    symbols: []
+    symbols_file: growth/owned.json   # فهرست سهم‌های این ربات (پویا، در datastore)
     buys_allowed: true
 
 account:
