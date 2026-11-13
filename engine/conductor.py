@@ -20,7 +20,39 @@ def load(path=PORTFOLIO_PATH):
     errs = validate(r)
     if errs:
         raise ValueError('invalid portfolio rules: ' + '; '.join(errs))
+    r['_dynamic'] = load_dynamic(r)
     return r
+
+
+def load_dynamic(r, store=None):
+    """نمادهای پویا: رباتی که symbols_file دارد، فهرست سهم‌های خودش را در datastore نگه می‌دارد.
+    خروجی {نماد: ربات}. فایل نبود یا خراب بود = فهرست خالی (سهم‌ها به صاحب پیش‌فرض برمی‌گردند)."""
+    store = store or os.getenv('DATASTORE', os.path.join(ROOT, 'datastore'))
+    out = {}
+    for name, s in r['sleeves'].items():
+        f = s.get('symbols_file')
+        if not f:
+            continue
+        try:
+            for sym in json.load(open(os.path.join(store, f), encoding='utf-8')):
+                out.setdefault(str(sym), name)
+        except Exception:
+            pass
+    return out
+
+
+def claim(rules, symbol, sleeve):
+    """ربات پویا یک سهم تازه را برای خودش ثبت می‌کند؛ فقط اگر صاحب صریح یا پویای دیگری نداشته باشد."""
+    if OCC.match(symbol) or not rules['sleeves'].get(sleeve, {}).get('symbols_file'):
+        return False
+    for name, s in rules['sleeves'].items():
+        if symbol in s['symbols']:
+            return False
+    dyn = rules.setdefault('_dynamic', {})
+    if dyn.get(symbol, sleeve) != sleeve:
+        return False
+    dyn[symbol] = sleeve
+    return True
 
 
 def validate(r):
@@ -38,6 +70,9 @@ def validate(r):
         for k in ('capital_usd', 'symbols', 'buys_allowed'):
             if k not in s:
                 errs.append(f'{name}: missing {k}')
+        sf = s.get('symbols_file')
+        if sf is not None and (not isinstance(sf, str) or sf.startswith('/') or '..' in sf or not sf.endswith('.json')):
+            errs.append(f'{name}: symbols_file must be a relative .json path inside the datastore')
         for sym in s.get('symbols', []):
             if sym == '*':
                 if '*' in owner:
@@ -66,6 +101,8 @@ def owner_of(rules, symbol):
             return name
         if '*' in s['symbols']:
             wild = name
+    if not m and symbol in rules.get('_dynamic', {}):      # سهم ثبت‌شده‌ی یک ربات پویا (قبل از صاحب پیش‌فرض)
+        return rules['_dynamic'][symbol]
     return wild if wild and not m else None
 
 
