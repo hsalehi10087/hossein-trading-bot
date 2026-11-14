@@ -1,16 +1,16 @@
 # قوانین استراتژی روند طلا — تنها منبع پارامترها.
 # هر تغییری فقط با Pull Request و merge به main اعمال می‌شود؛ با هر تغییر، version یکی بالا می‌رود.
 strategy: gld_trend
-version: 1
-approved: '2026-10-19'
+version: 2
+approved: 'on-merge'
 stage: paper            # paper | live — فعلاً فقط paper مجاز است
 signal_symbol: GC=F     # سیگنال از طلای آتی روزانه (همان داده‌ی بک‌تست)
 trade_symbol: GLD       # معامله روی ETF طلا
 
 params:
   n_entry: 40           # ورود: بسته‌شدن بالای سقف n روز قبل
-  m_exit: 10            # خروج: بسته‌شدن زیر کف m روز قبل
-  atr_k: 2.0            # حد ضرر شناور: سقف بسته‌شدن‌ها منهای k×ATR (0 = غیرفعال)
+  m_exit: 20            # خروج: بسته‌شدن زیر کف m روز قبل
+  atr_k: 0.0            # حد ضرر شناور: سقف بسته‌شدن‌ها منهای k×ATR (0 = غیرفعال)
   atr_n: 14
   vol_window: 20
   target_vol: 0.12      # اندازه = min(1, target_vol / نوسان سالانه)
