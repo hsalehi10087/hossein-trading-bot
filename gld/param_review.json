@@ -1,5 +1,5 @@
 {
- "last_review": "2026-10-19",
+ "last_review": "2026-11-14",
  "status": "pr_opened",
  "current": {
   "key": [
@@ -8,16 +8,16 @@
    2.0
   ],
   "train": {
-   "cagr": 5.61,
-   "sharpe": 0.77,
+   "cagr": 5.42,
+   "sharpe": 0.74,
    "max_dd": -8.22,
    "trades": 21
   },
   "test": {
-   "cagr": -5.22,
-   "sharpe": -0.6,
+   "cagr": -2.41,
+   "sharpe": -0.27,
    "max_dd": -6.12,
-   "trades": 4
+   "trades": 3
   }
  },
  "candidate": {
@@ -27,18 +27,18 @@
    0.0
   ],
   "train": {
-   "cagr": 9.54,
-   "sharpe": 1.0,
+   "cagr": 9.49,
+   "sharpe": 0.98,
    "max_dd": -12.52,
    "trades": 11
   },
   "test": {
-   "cagr": -2.52,
-   "sharpe": -0.18,
+   "cagr": 0.44,
+   "sharpe": 0.09,
    "max_dd": -12.79,
    "trades": 2
   },
-  "pr": "https://github.com/hsalehi10087/hossein-trading-bot/compare/main...gld-review/2026-10-19?expand=1"
+  "pr": "https://github.com/hsalehi10087/hossein-trading-bot/compare/main...gld-review/2026-11-14?expand=1"
  },
  "history": [
   {
@@ -52,6 +52,15 @@
   },
   {
    "date": "2026-10-19",
+   "status": "pr_opened",
+   "candidate": [
+    40,
+    20,
+    0.0
+   ]
+  },
+  {
+   "date": "2026-11-14",
    "status": "pr_opened",
    "candidate": [
     40,
