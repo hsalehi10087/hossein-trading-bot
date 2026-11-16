@@ -4,32 +4,60 @@
    "ticker": "CF",
    "name": "CF Industries",
    "qty": 4,
-   "entry": 124.96,
-   "peak": 124.96,
+   "entry": 126.89,
+   "peak": 126.89,
    "date": "2026-11-13",
    "signal_date": "2026-11-13",
    "signal_price": 124.92,
    "spy_entry": 760.83,
    "order_id": "c6ac1d51-c105-4663-88ac-9a5d62da82d1",
-   "filled": false
+   "filled": true
   },
   {
    "ticker": "VEEV",
    "name": "Veeva Systems",
    "qty": 1,
-   "entry": 302.43,
-   "peak": 302.43,
+   "entry": 304.91,
+   "peak": 304.91,
    "date": "2026-11-13",
    "signal_date": "2026-11-13",
    "signal_price": 302.42,
    "spy_entry": 760.83,
    "order_id": "f7ce4c18-f770-4bbf-9f0f-a9f4c4d870af",
+   "filled": true
+  },
+  {
+   "ticker": "CAKE",
+   "name": "The Cheesecake Factory, Inc.",
+   "qty": 4,
+   "entry": 108.06,
+   "peak": 108.06,
+   "date": "2026-11-16",
+   "signal_date": "2026-11-14",
+   "signal_price": 109.11,
+   "spy_entry": 745.9,
+   "order_id": "efb307a0-371d-4d6b-946b-5d73c1f3709e",
+   "filled": false
+  },
+  {
+   "ticker": "ELF",
+   "name": "e.l.f. Beauty",
+   "qty": 4,
+   "entry": 117.58,
+   "peak": 117.58,
+   "date": "2026-11-16",
+   "signal_date": "2026-11-14",
+   "signal_price": 117.98,
+   "spy_entry": 745.9,
+   "order_id": "894cdc0c-d972-4ac4-86bb-6b265eb16868",
    "filled": false
   }
  ],
  "closed": [],
  "processed": [
   "2026-11-13:CF",
-  "2026-11-13:VEEV"
+  "2026-11-13:VEEV",
+  "2026-11-14:CAKE",
+  "2026-11-14:ELF"
  ]
 }
