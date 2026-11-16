@@ -474,26 +474,6 @@
    "date": "2026-11-13",
    "spy_entry": 758.52,
    "source": "ARK"
-  },
-  {
-   "id": "ARK|ARK:Cathie Wood|NTLA|buy|2026-11-13",
-   "leader": "ARK:Cathie Wood",
-   "ticker": "NTLA",
-   "qty": 1,
-   "entry": 9.71,
-   "date": "2026-11-15",
-   "spy_entry": 752.09,
-   "source": "ARK"
-  },
-  {
-   "id": "Insiders|Insiders:Cluster buys|HPP|buy|2026-11-09",
-   "leader": "Insiders:مدیران HPP",
-   "ticker": "HPP",
-   "qty": 3,
-   "entry": 8.86,
-   "date": "2026-11-15",
-   "spy_entry": 752.09,
-   "source": "Insiders"
   }
  ],
  "closed": [],
