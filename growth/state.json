@@ -30,26 +30,52 @@
    "ticker": "CAKE",
    "name": "The Cheesecake Factory, Inc.",
    "qty": 4,
-   "entry": 108.06,
-   "peak": 108.06,
+   "entry": 108.33,
+   "peak": 111.13,
    "date": "2026-11-16",
    "signal_date": "2026-11-14",
    "signal_price": 109.11,
    "spy_entry": 745.9,
    "order_id": "efb307a0-371d-4d6b-946b-5d73c1f3709e",
-   "filled": false
+   "filled": true
   },
   {
    "ticker": "ELF",
    "name": "e.l.f. Beauty",
    "qty": 4,
-   "entry": 117.58,
-   "peak": 117.58,
+   "entry": 117.7,
+   "peak": 117.7,
    "date": "2026-11-16",
    "signal_date": "2026-11-14",
    "signal_price": 117.98,
    "spy_entry": 745.9,
    "order_id": "894cdc0c-d972-4ac4-86bb-6b265eb16868",
+   "filled": true
+  },
+  {
+   "ticker": "CHD",
+   "name": "Church & Dwight",
+   "qty": 4,
+   "entry": 113.35,
+   "peak": 113.35,
+   "date": "2026-11-17",
+   "signal_date": "2026-11-17",
+   "signal_price": 114.74,
+   "spy_entry": 732.09,
+   "order_id": "7efc4ef0-8672-4b36-9033-4a09c5150c14",
+   "filled": false
+  },
+  {
+   "ticker": "AMN",
+   "name": "Amn Healthcare Services, Inc.",
+   "qty": 13,
+   "entry": 38.46,
+   "peak": 38.46,
+   "date": "2026-11-17",
+   "signal_date": "2026-11-17",
+   "signal_price": 39.64,
+   "spy_entry": 732.09,
+   "order_id": "89c5a4e2-676a-46af-9912-19baaa57ff9f",
    "filled": false
   }
  ],
@@ -58,6 +84,8 @@
   "2026-11-13:CF",
   "2026-11-13:VEEV",
   "2026-11-14:CAKE",
-  "2026-11-14:ELF"
+  "2026-11-14:ELF",
+  "2026-11-17:CHD",
+  "2026-11-17:AMN"
  ]
 }
