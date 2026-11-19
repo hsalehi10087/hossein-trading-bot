@@ -94,6 +94,61 @@ def test_sequential_orders_share_cash(tmp_path):
     assert q1 == 20 and q2 == (10000 - 1000 - 20 * 380) // 720
 
 
+def _with_short_sleeve(capital=10000, margin_factor=1.5):
+    r = copy.deepcopy(R)
+    r['sleeves']['short_test'] = {'capital_usd': capital, 'symbols': ['NFLX'], 'buys_allowed': True,
+                                  'short_allowed': True, 'short_margin_factor': margin_factor}
+    return r
+
+
+def test_short_open_within_budget(tmp_path):
+    r = _with_short_sleeve()
+    c = PC.Conductor(r, {'equity': 100000, 'cash': 90000}, [], str(tmp_path / 's.json'))
+    # سقف شورت = 10000/1.5 ≈ 6666؛ قیمت ۱۰۰ × ۵۰ = ۵۰۰۰ باید کامل تأیید شود
+    q, ck = c.approve('short_test', {'symbol': 'NFLX', 'side': 'sell', 'qty': 50, 'price': 100})
+    assert q == 50
+    assert c.pos['NFLX']['qty'] == -50
+    assert all(x['passed'] for x in ck if x['name'] == 'portfolio:short_allowed')
+
+
+def test_short_capped_by_margin_budget(tmp_path):
+    r = _with_short_sleeve()
+    c = PC.Conductor(r, {'equity': 100000, 'cash': 90000}, [], str(tmp_path / 's.json'))
+    # سقف شورت ≈ ۶۶۶۶؛ سفارش ۱۰۰ × ۱۰۰ = ۱۰۰۰۰ باید به سقف کوچک شود
+    q, _ = c.approve('short_test', {'symbol': 'NFLX', 'side': 'sell', 'qty': 100, 'price': 100})
+    assert 0 < q < 100
+    assert q == int(10000 / 1.5 // 100)
+
+
+def test_short_without_permission_blocked(tmp_path):
+    r = _with_short_sleeve()
+    r['sleeves']['short_test']['short_allowed'] = False
+    c = PC.Conductor(r, {'equity': 100000, 'cash': 90000}, [], str(tmp_path / 's.json'))
+    q, ck = c.approve('short_test', {'symbol': 'NFLX', 'side': 'sell', 'qty': 10, 'price': 100})
+    assert q == 0
+    assert any(x['name'] == 'portfolio:no_short' and not x['passed'] for x in ck)
+
+
+def test_short_cover_ignores_buy_budget(tmp_path):
+    r = _with_short_sleeve(capital=1000)   # بودجه‌ی خرید معمولی خیلی کم، ولی پوشش نباید به آن محدود شود
+    c = PC.Conductor(r, {'equity': 100000, 'cash': 500},
+                     [{'symbol': 'NFLX', 'qty': '-50', 'current_price': '100', 'market_value': '-5000'}],
+                     str(tmp_path / 's.json'))
+    q, ck = c.approve('short_test', {'symbol': 'NFLX', 'side': 'buy', 'qty': 50, 'price': 90})
+    assert q == 50
+    assert c.pos['NFLX']['qty'] == 0
+    assert any(x['name'] == 'portfolio:cover_only' and x['passed'] for x in ck)
+
+
+def test_short_cover_capped_at_held(tmp_path):
+    r = _with_short_sleeve()
+    c = PC.Conductor(r, {'equity': 100000, 'cash': 90000},
+                     [{'symbol': 'NFLX', 'qty': '-50', 'current_price': '100', 'market_value': '-5000'}],
+                     str(tmp_path / 's.json'))
+    q, _ = c.approve('short_test', {'symbol': 'NFLX', 'side': 'buy', 'qty': 999, 'price': 90})
+    assert q == 50   # فقط تا سقف پوشش بدهی، نه خرید تازه‌ی روی آن
+
+
 def test_symbol_cap_and_blocks(tmp_path):
     big = copy.deepcopy(R); big['sleeves']['copy_trade']['capital_usd'] = 60000
     c = PC.Conductor(big, {'equity': 100000, 'cash': 90000},
