@@ -1,0 +1,137 @@
+{
+ "lots": [
+  {
+   "ticker": "SA",
+   "name": "Seabridge Gold, Inc. Common Shares New",
+   "qty": 27,
+   "entry": 18.08,
+   "trough": 18.08,
+   "date": "2026-11-19",
+   "signal_date": "2026-11-19",
+   "signal_price": 18.06,
+   "order_id": "5c3e5013-b739-4cfd-98cc-eebfd62011d9",
+   "filled": false
+  },
+  {
+   "ticker": "SNEX",
+   "name": "StoneX Group Inc. - Common Stock",
+   "qty": 12,
+   "entry": 39.415,
+   "trough": 39.415,
+   "date": "2026-11-19",
+   "signal_date": "2026-11-19",
+   "signal_price": 39.45,
+   "order_id": "9392322e-f42f-41d3-8cc2-9ece38abe396",
+   "filled": false
+  },
+  {
+   "ticker": "LQDT",
+   "name": "Liquidity Services, Inc. - Common Stock",
+   "qty": 15,
+   "entry": 32.995,
+   "trough": 32.995,
+   "date": "2026-11-19",
+   "signal_date": "2026-11-19",
+   "signal_price": 33.03,
+   "order_id": "26268d4e-5312-4559-b875-20e6f8ac2c4e",
+   "filled": false
+  },
+  {
+   "ticker": "RRGB",
+   "name": "Red Robin Gourmet Burgers, Inc. - Common Stock",
+   "qty": 79,
+   "entry": 6.26,
+   "trough": 6.26,
+   "date": "2026-11-19",
+   "signal_date": "2026-11-19",
+   "signal_price": 6.28,
+   "order_id": "f3bdeebc-fe79-4048-85c6-68221a350258",
+   "filled": false
+  },
+  {
+   "ticker": "VRA",
+   "name": "Vera Bradley, Inc. - Common Stock",
+   "qty": 92,
+   "entry": 5.39,
+   "trough": 5.39,
+   "date": "2026-11-19",
+   "signal_date": "2026-11-19",
+   "signal_price": 5.41,
+   "order_id": "86a33455-3795-4c7d-ac65-85ca42de8dd0",
+   "filled": false
+  },
+  {
+   "ticker": "RMIX",
+   "name": "Suncrete, Inc. - Class A Common Stock",
+   "qty": 79,
+   "entry": 6.29,
+   "trough": 6.29,
+   "date": "2026-11-19",
+   "signal_date": "2026-11-19",
+   "signal_price": 6.3,
+   "order_id": "3f1d120c-7e0e-4135-9a40-8ff103332ea3",
+   "filled": false
+  },
+  {
+   "ticker": "SLQT",
+   "name": "SelectQuote, Inc. Common Stock",
+   "qty": 92,
+   "entry": 5.38,
+   "trough": 5.38,
+   "date": "2026-11-19",
+   "signal_date": "2026-11-19",
+   "signal_price": 5.35,
+   "order_id": "17af7c58-b930-4299-8373-bd757975957a",
+   "filled": false
+  },
+  {
+   "ticker": "WSM",
+   "name": "Williams-Sonoma, Inc. Common Stock (DE)",
+   "qty": 2,
+   "entry": 221.07,
+   "trough": 221.07,
+   "date": "2026-11-19",
+   "signal_date": "2026-11-19",
+   "signal_price": 220.66,
+   "order_id": "8e1d6f66-e478-44a0-abbd-fd172d85c485",
+   "filled": false
+  },
+  {
+   "ticker": "CTEV",
+   "name": "Claritev Corporation Class A Common Stock",
+   "qty": 26,
+   "entry": 19.225,
+   "trough": 19.225,
+   "date": "2026-11-19",
+   "signal_date": "2026-11-19",
+   "signal_price": 19.03,
+   "order_id": "e5241b79-2189-4176-9a2c-c26fd2e0d650",
+   "filled": false
+  },
+  {
+   "ticker": "WRBY",
+   "name": "Warby Parker Inc. Class A Common Stock",
+   "qty": 20,
+   "entry": 24.19,
+   "trough": 24.19,
+   "date": "2026-11-19",
+   "signal_date": "2026-11-19",
+   "signal_price": 24.13,
+   "order_id": "bd2a6e3e-c06c-4e8f-9d64-cd94d3ba9d2f",
+   "filled": false
+  }
+ ],
+ "closed": [],
+ "processed": [
+  "losers:2026-11-19:SA",
+  "losers:2026-11-19:SNEX",
+  "losers:2026-11-19:LQDT",
+  "losers:2026-11-19:RRGB",
+  "losers:2026-11-19:VRA",
+  "losers:2026-11-19:RMIX",
+  "losers:2026-11-19:SLQT",
+  "losers:2026-11-19:WSM",
+  "losers:2026-11-19:CTEV",
+  "losers:2026-11-19:WRBY"
+ ]
+}
