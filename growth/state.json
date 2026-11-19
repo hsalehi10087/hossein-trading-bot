@@ -82,26 +82,52 @@
    "ticker": "PRSU",
    "name": "Pursuit Attractions & Hospitality, Inc.",
    "qty": 9,
-   "entry": 54.69,
-   "peak": 54.69,
+   "entry": 54.8,
+   "peak": 54.8,
    "date": "2026-11-18",
    "signal_date": "2026-11-18",
    "signal_price": 52.84,
    "spy_entry": 728.995,
    "order_id": "b0d3650f-4a77-41f1-bfe5-fa208ed789e8",
-   "filled": false
+   "filled": true
   },
   {
    "ticker": "FTDR",
    "name": "Frontdoor, Inc.",
    "qty": 5,
-   "entry": 94.495,
-   "peak": 94.495,
+   "entry": 94.73,
+   "peak": 94.73,
    "date": "2026-11-18",
    "signal_date": "2026-11-18",
    "signal_price": 93.92,
    "spy_entry": 728.995,
    "order_id": "14849c39-a85a-4f20-a9f8-a779c0b20d85",
+   "filled": true
+  },
+  {
+   "ticker": "LIVN",
+   "name": "LivaNova",
+   "qty": 5,
+   "entry": 92.2,
+   "peak": 92.2,
+   "date": "2026-11-19",
+   "signal_date": "2026-11-19",
+   "signal_price": 94.54,
+   "spy_entry": 727.38,
+   "order_id": "f2e69566-0be9-4e78-bec5-7500ecb84895",
+   "filled": false
+  },
+  {
+   "ticker": "FIVE",
+   "name": "Five Below",
+   "qty": 2,
+   "entry": 232.96,
+   "peak": 232.96,
+   "date": "2026-11-19",
+   "signal_date": "2026-11-19",
+   "signal_price": 235.53,
+   "spy_entry": 727.38,
+   "order_id": "6a84bcac-5e0d-4a77-9a57-53d5379c8ac2",
    "filled": false
   }
  ],
@@ -114,6 +140,8 @@
   "2026-11-17:CHD",
   "2026-11-17:AMN",
   "2026-11-18:PRSU",
-  "2026-11-18:FTDR"
+  "2026-11-18:FTDR",
+  "2026-11-19:LIVN",
+  "2026-11-19:FIVE"
  ]
 }
