@@ -1,7 +1,7 @@
 # قوانین هماهنگ‌کننده‌ی سبد — تقسیم سرمایه، صاحب هر نماد و حدود کل حساب.
 # مثل بقیه‌ی قوانین فقط با Pull Request تغییر می‌کند (version+1).
-version: 9
-approved: '2026-11-13'
+version: 10
+approved: '2026-11-20'
 
 sleeves:
   gld_trend:            # ربات روند طلا
@@ -46,6 +46,14 @@ sleeves:
     symbols: []
     symbols_file: growth/owned.json   # فهرست سهم‌های این ربات (پویا، در datastore)
     buys_allowed: true
+  decline_short:        # فروش استقراضی (Short) روی سیگنال‌های افت قیمت/سود آمریکا (قواعد در rules/decline_short_bot.yaml)
+    capital_usd: 10000
+    symbols: []
+    symbols_file: decline_short/owned.json   # فهرست سهم‌های این ربات (پویا، در datastore)
+    buys_allowed: true        # لازم برای پوشش (buy-to-cover) شورت‌های باز
+    short_allowed: true       # فقط همین sleeve اجازه‌ی شورت دارد؛ حساب کلی no_margin: true می‌ماند
+    short_margin_factor: 1.5  # سقف شورت = capital_usd / 1.5 — برآورد محافظه‌کارانه‌ی مارجین رگ‌تی (۱۵۰٪ ارزش پوزیشن)
+                               # تا این sleeve هرگز بیش از سرمایه‌ی خودش نیاز به مارجین واقعی نداشته باشد
 
 account:
   no_margin: true            # نقد بعد از خریدها نباید از reserve_cash_usd کمتر شود

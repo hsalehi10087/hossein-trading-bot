@@ -1,0 +1,21 @@
+# قواعد ربات «شورت افت»: فروش استقراضی سیگنال‌های افت قیمت/سود آمریکا (stock-scanner).
+# مثل بقیه‌ی قوانین فقط با Pull Request تغییر می‌کند (version+1).
+version: 1
+approved: '2026-11-20'
+stage: paper
+source_urls:
+  losers: https://raw.githubusercontent.com/hsalehi10087/stock-scanner/main/data/losers_signal
+  fund_decline: https://raw.githubusercontent.com/hsalehi10087/stock-scanner/main/data/fund_decline_signal
+market: us
+capital_usd: 10000
+short_margin_factor: 1.5   # باید با rules/portfolio.yaml → sleeves.decline_short.short_margin_factor یکی باشد
+trade_usd: 500             # حداکثر ارزش اسمی هر شورت در لحظه‌ی باز کردن
+max_positions: 13          # trade_usd × max_positions × short_margin_factor ≈ capital_usd (بدون نیاز به مارجین واقعی بیش از سرمایه‌ی خودش)
+signal_max_age_days: 3
+max_chase_pct: 0.05         # اگر قیمت از سیگنال بیشتر از ۵٪ افت کرده باشد، جاماندگی: کنار (ریسک squeeze در افت‌های تمام‌شده)
+min_price_usd: 5
+min_decline_streak: 1       # برای سیگنال افت سود: دست‌کم این‌قدر فصل پیاپی سیگنال شده باشد
+stop_loss_pct: 0.15         # قیمت ۱۵٪ از نقطه‌ی ورود (شورت) بالا رفت → پوشش اجباری (حد ضرر)
+trail_pct: 0.20             # قیمت از پایین‌ترین نقطه‌ی دیده‌شده ۲۰٪ بالا آمد → پوشش با سود (trailing)
+max_hold_days: 180
+rebuy_cooldown_days: 30

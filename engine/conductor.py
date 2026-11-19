@@ -125,6 +125,10 @@ class Conductor:
     def sleeve_value(self, sleeve):
         return sum(v['value'] for s, v in self.pos.items() if owner_of(self.r, s) == sleeve)
 
+    def sleeve_short_value(self, sleeve):
+        """ارزش اسمی (مثبت) موقعیت‌های شورت باز این sleeve."""
+        return sum(abs(v['value']) for s, v in self.pos.items() if owner_of(self.r, s) == sleeve and v['qty'] < 0)
+
     def gross(self):
         return sum(abs(v['value']) for v in self.pos.values())
 
@@ -139,24 +143,70 @@ class Conductor:
 
     # ---- اجازه ----
     def approve(self, sleeve, order):
-        """order = {symbol, side, qty, price}. خروجی: (qty تأییدشده، چک‌ها). فروش کوچک نمی‌شود؛ خرید ممکن است کوچک شود."""
+        """order = {symbol, side, qty, price}. خروجی: (qty تأییدشده، چک‌ها).
+
+        چهار حالت: فروشِ کاهش/بستن موقعیت خرید (بدون شورت، قدیمی)، فروشِ باز/افزایش شورت
+        (فقط اگر sleeve اجازه‌ی short_allowed داشته باشد)، خریدِ پوشش شورت (buy-to-cover، بدون
+        محدودیت بودجه‌ی خریدِ معمولی چون فقط بدهی را کم می‌کند)، و خریدِ معمولی (قدیمی).
+        فروش و پوشش کوچک نمی‌شوند (کوچک‌شدنشان همیشه کم‌ریسک‌تر است)؛ خرید و شورتِ تازه ممکن است کوچک شوند."""
         sym, side, qty, px = order['symbol'], order['side'], int(order['qty']), float(order['price'])
         s = self.r['sleeves'].get(sleeve)
         checks = [('sleeve_known', s is not None, sleeve),
                   ('symbol_owner', s is not None and owner_of(self.r, sym) == sleeve, f'{sym} → {owner_of(self.r, sym)}')]
-        if side == 'sell':
-            held = self.pos.get(sym, {}).get('qty', 0)
-            checks.append(('no_short', qty <= held, f'{qty} <= {held:g}'))
+        held = self.pos.get(sym, {}).get('qty', 0)
+        scale = self.a['brake_scale'] if self.brake else 1.0
+
+        if side == 'sell' and qty <= max(held, 0):
+            checks.append(('no_short', True, f'{qty} <= {held:g}'))
             ok = all(c[1] for c in checks)
             if ok:
                 self._apply(sym, -qty, px)
             return self._done(sleeve, order, qty if ok else 0, checks)
-        scale = self.a['brake_scale'] if self.brake else 1.0
+
+        if side == 'sell':
+            # فروش بیش از موجودی = باز کردن یا افزایش شورت؛ بدون short_allowed کل سفارش رد می‌شود (رفتار قدیمی)
+            over = qty - max(held, 0)
+            allow_short = bool(s and s.get('short_allowed'))
+            if not allow_short:
+                checks.append(('no_short', False, f'{qty} <= {held:g}'))
+                return self._done(sleeve, order, 0, checks)
+            margin_factor = s.get('short_margin_factor', 1.5)
+            short_cap = s['capital_usd'] * scale / margin_factor
+            room_short = short_cap - self.sleeve_short_value(sleeve)
+            room_gross = self.a['max_gross_exposure'] * self.equity - self.gross()
+            room_symbol = self.a.get('max_symbol_pct', 1.0) * self.equity - abs(self.pos.get(sym, {}).get('value', 0.0))
+            room = min(room_short, room_gross, room_symbol)
+            fit_over = max(0, min(over, math.floor(room / px))) if px > 0 else 0
+            checks += [('short_allowed', True, 'true'),
+                       ('kill_switch', not self.kill, f'kill={self.kill}'),
+                       ('short_budget', room_short >= px, f'room {room_short:,.0f}$ (margin×{margin_factor:g}, brake={self.brake})'),
+                       ('gross_exposure', room_gross >= px, f'room {room_gross:,.0f}$'),
+                       ('symbol_cap', room_symbol >= px, f'room {room_symbol:,.0f}$'),
+                       ('not_blocked', sym not in (self.a.get('blocked_symbols') or []), sym),
+                       ('fits', fit_over >= 1, f'{fit_over}/{over}')]
+            ok = all(c[1] for c in checks)
+            q = (max(held, 0) + fit_over) if ok else 0
+            if q:
+                self._apply(sym, -q, px)
+            return self._done(sleeve, order, q, checks)
+
+        if held < 0:
+            # خریدِ پوشش شورت (buy-to-cover): فقط کاهش بدهی، بدون چک بودجه‌ی خرید معمولی
+            cover = min(qty, int(-held))
+            checks += [('cover_only', cover >= 1, f'{cover}/{qty}'),
+                       ('kill_switch', not self.kill, f'kill={self.kill}')]
+            ok = all(c[1] for c in checks)
+            q = cover if ok else 0
+            if q:
+                self._apply(sym, q, px)
+            return self._done(sleeve, order, q, checks)
+
+        # خرید معمولی (موجودی فعلی صفر یا مثبت)
         cap = s['capital_usd'] * scale * (1 + self.a['sleeve_drift_tolerance']) if s else 0
         room_sleeve = cap - self.sleeve_value(sleeve)
         room_cash = self.cash - self.a['reserve_cash_usd'] if self.a['no_margin'] else float('inf')
         room_gross = self.a['max_gross_exposure'] * self.equity - self.gross()
-        room_symbol = self.a.get('max_symbol_pct', 1.0) * self.equity - self.pos.get(sym, {}).get('value', 0.0)
+        room_symbol = self.a.get('max_symbol_pct', 1.0) * self.equity - abs(self.pos.get(sym, {}).get('value', 0.0))
         room = min(room_sleeve, room_cash, room_gross, room_symbol)
         fit = max(0, min(qty, math.floor(room / px))) if px > 0 else 0
         checks += [('buys_allowed', bool(s and s['buys_allowed']), str(s and s['buys_allowed'])),
