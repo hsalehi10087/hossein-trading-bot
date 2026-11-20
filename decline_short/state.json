@@ -119,6 +119,42 @@
    "signal_price": 24.13,
    "order_id": "bd2a6e3e-c06c-4e8f-9d64-cd94d3ba9d2f",
    "filled": false
+  },
+  {
+   "ticker": "HY",
+   "name": "Hyster-Yale, Inc. Class A common stock",
+   "qty": 31,
+   "entry": 15.97,
+   "trough": 15.97,
+   "date": "2026-11-20",
+   "signal_date": "2026-11-18",
+   "signal_price": 15.44,
+   "order_id": "671f07f2-7522-4395-b250-9e20fd63546d",
+   "filled": false
+  },
+  {
+   "ticker": "PRE",
+   "name": "Prenetics Global Limited - Class A Ordinary Share",
+   "qty": 48,
+   "entry": 10.365,
+   "trough": 10.365,
+   "date": "2026-11-20",
+   "signal_date": "2026-11-18",
+   "signal_price": 10.35,
+   "order_id": "68047297-ab80-47e6-92c7-8de5c723a9c1",
+   "filled": false
+  },
+  {
+   "ticker": "KRNT",
+   "name": "Kornit Digital Ltd. - Ordinary Shares",
+   "qty": 33,
+   "entry": 14.72,
+   "trough": 14.72,
+   "date": "2026-11-20",
+   "signal_date": "2026-11-18",
+   "signal_price": 12.77,
+   "order_id": "e2e87279-46df-4702-921e-08f87fe149af",
+   "filled": false
   }
  ],
  "closed": [],
@@ -132,6 +168,9 @@
   "losers:2026-11-19:SLQT",
   "losers:2026-11-19:WSM",
   "losers:2026-11-19:CTEV",
-  "losers:2026-11-19:WRBY"
+  "losers:2026-11-19:WRBY",
+  "losers:2026-11-18:HY",
+  "losers:2026-11-18:PRE",
+  "losers:2026-11-18:KRNT"
  ]
 }
