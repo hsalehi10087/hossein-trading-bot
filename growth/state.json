@@ -108,26 +108,39 @@
    "ticker": "LIVN",
    "name": "LivaNova",
    "qty": 5,
-   "entry": 92.2,
-   "peak": 92.2,
+   "entry": 92.91,
+   "peak": 92.91,
    "date": "2026-11-19",
    "signal_date": "2026-11-19",
    "signal_price": 94.54,
    "spy_entry": 727.38,
    "order_id": "f2e69566-0be9-4e78-bec5-7500ecb84895",
-   "filled": false
+   "filled": true
   },
   {
    "ticker": "FIVE",
    "name": "Five Below",
    "qty": 2,
-   "entry": 232.96,
-   "peak": 232.96,
+   "entry": 232.49,
+   "peak": 232.49,
    "date": "2026-11-19",
    "signal_date": "2026-11-19",
    "signal_price": 235.53,
    "spy_entry": 727.38,
    "order_id": "6a84bcac-5e0d-4a77-9a57-53d5379c8ac2",
+   "filled": true
+  },
+  {
+   "ticker": "DFIN",
+   "name": "Donnelley Financial Solutions, Inc.",
+   "qty": 7,
+   "entry": 66.255,
+   "peak": 66.255,
+   "date": "2026-11-20",
+   "signal_date": "2026-11-20",
+   "signal_price": 65.41,
+   "spy_entry": 709.31,
+   "order_id": "2d7f591e-0df4-4397-b249-781d5f49a55a",
    "filled": false
   }
  ],
@@ -142,6 +155,7 @@
   "2026-11-18:PRSU",
   "2026-11-18:FTDR",
   "2026-11-19:LIVN",
-  "2026-11-19:FIVE"
+  "2026-11-19:FIVE",
+  "2026-11-20:DFIN"
  ]
 }
