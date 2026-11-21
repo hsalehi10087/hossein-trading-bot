@@ -35,3 +35,6 @@
 {"sleeve": "dbmf_band", "session": "2026-11-19", "signal_close": 31.8, "sma": 31.0, "gap_pct": 2.59, "inside": true, "held": 158.0, "action": null}
 {"sleeve": "spy_10m", "session": "2026-11-19", "signal_close": 715.87, "sma": 728.11, "gap_pct": -1.68, "inside": false, "held": 7.0, "order": "200 {\"id\":\"dbc4a18d-387a-4a69-a2a0-a9c4afebf18f\",\"client_order_id\":\"mat-spy_10m-2026-11-19-sell\",\"created_at\":\"2026-11-20T03:06:57.700796468Z\",\"updated_at", "action": "sell"}
 {"sleeve": "qqq_200", "session": "2026-11-19", "signal_close": 645.04, "sma": 682.01, "gap_pct": -5.42, "inside": false, "held": 0.0, "action": null}
+{"sleeve": "dbmf_band", "session": "2026-11-20", "signal_close": 31.45, "sma": 31.01, "gap_pct": 1.41, "inside": true, "held": 158.0, "action": null}
+{"sleeve": "spy_10m", "session": "2026-11-20", "signal_close": 689.81, "sma": 728.14, "gap_pct": -5.26, "inside": false, "held": 0.0, "action": null}
+{"sleeve": "qqq_200", "session": "2026-11-20", "signal_close": 608.45, "sma": 682.07, "gap_pct": -10.79, "inside": false, "held": 0.0, "action": null}
