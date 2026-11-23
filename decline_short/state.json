@@ -4,157 +4,157 @@
    "ticker": "SA",
    "name": "Seabridge Gold, Inc. Common Shares New",
    "qty": 27,
-   "entry": 18.08,
-   "trough": 18.08,
+   "entry": 17.536667,
+   "trough": 17.275,
    "date": "2026-11-19",
    "signal_date": "2026-11-19",
    "signal_price": 18.06,
    "order_id": "5c3e5013-b739-4cfd-98cc-eebfd62011d9",
-   "filled": false
+   "filled": true
   },
   {
    "ticker": "SNEX",
    "name": "StoneX Group Inc. - Common Stock",
    "qty": 12,
-   "entry": 39.415,
-   "trough": 39.415,
+   "entry": 37.214167,
+   "trough": 36.625,
    "date": "2026-11-19",
    "signal_date": "2026-11-19",
    "signal_price": 39.45,
    "order_id": "9392322e-f42f-41d3-8cc2-9ece38abe396",
-   "filled": false
+   "filled": true
   },
   {
    "ticker": "LQDT",
    "name": "Liquidity Services, Inc. - Common Stock",
    "qty": 15,
-   "entry": 32.995,
-   "trough": 32.995,
+   "entry": 32.25,
+   "trough": 31.86,
    "date": "2026-11-19",
    "signal_date": "2026-11-19",
    "signal_price": 33.03,
    "order_id": "26268d4e-5312-4559-b875-20e6f8ac2c4e",
-   "filled": false
+   "filled": true
   },
   {
    "ticker": "RRGB",
    "name": "Red Robin Gourmet Burgers, Inc. - Common Stock",
    "qty": 79,
-   "entry": 6.26,
-   "trough": 6.26,
+   "entry": 5.92,
+   "trough": 5.92,
    "date": "2026-11-19",
    "signal_date": "2026-11-19",
    "signal_price": 6.28,
    "order_id": "f3bdeebc-fe79-4048-85c6-68221a350258",
-   "filled": false
+   "filled": true
   },
   {
    "ticker": "VRA",
    "name": "Vera Bradley, Inc. - Common Stock",
    "qty": 92,
-   "entry": 5.39,
-   "trough": 5.39,
+   "entry": 5.371739,
+   "trough": 4.95,
    "date": "2026-11-19",
    "signal_date": "2026-11-19",
    "signal_price": 5.41,
    "order_id": "86a33455-3795-4c7d-ac65-85ca42de8dd0",
-   "filled": false
+   "filled": true
   },
   {
    "ticker": "RMIX",
    "name": "Suncrete, Inc. - Class A Common Stock",
    "qty": 79,
-   "entry": 6.29,
-   "trough": 6.29,
+   "entry": 6.0,
+   "trough": 5.845,
    "date": "2026-11-19",
    "signal_date": "2026-11-19",
    "signal_price": 6.3,
    "order_id": "3f1d120c-7e0e-4135-9a40-8ff103332ea3",
-   "filled": false
+   "filled": true
   },
   {
    "ticker": "SLQT",
    "name": "SelectQuote, Inc. Common Stock",
    "qty": 92,
-   "entry": 5.38,
-   "trough": 5.38,
+   "entry": 5.19,
+   "trough": 4.96,
    "date": "2026-11-19",
    "signal_date": "2026-11-19",
    "signal_price": 5.35,
    "order_id": "17af7c58-b930-4299-8373-bd757975957a",
-   "filled": false
+   "filled": true
   },
   {
    "ticker": "WSM",
    "name": "Williams-Sonoma, Inc. Common Stock (DE)",
    "qty": 2,
-   "entry": 221.07,
-   "trough": 221.07,
+   "entry": 217.17,
+   "trough": 210.69,
    "date": "2026-11-19",
    "signal_date": "2026-11-19",
    "signal_price": 220.66,
    "order_id": "8e1d6f66-e478-44a0-abbd-fd172d85c485",
-   "filled": false
+   "filled": true
   },
   {
    "ticker": "CTEV",
    "name": "Claritev Corporation Class A Common Stock",
    "qty": 26,
-   "entry": 19.225,
-   "trough": 19.225,
+   "entry": 18.0,
+   "trough": 18.0,
    "date": "2026-11-19",
    "signal_date": "2026-11-19",
    "signal_price": 19.03,
    "order_id": "e5241b79-2189-4176-9a2c-c26fd2e0d650",
-   "filled": false
+   "filled": true
   },
   {
    "ticker": "WRBY",
    "name": "Warby Parker Inc. Class A Common Stock",
    "qty": 20,
-   "entry": 24.19,
-   "trough": 24.19,
+   "entry": 23.614,
+   "trough": 23.115,
    "date": "2026-11-19",
    "signal_date": "2026-11-19",
    "signal_price": 24.13,
    "order_id": "bd2a6e3e-c06c-4e8f-9d64-cd94d3ba9d2f",
-   "filled": false
+   "filled": true
   },
   {
    "ticker": "HY",
    "name": "Hyster-Yale, Inc. Class A common stock",
    "qty": 31,
-   "entry": 15.97,
-   "trough": 15.97,
+   "entry": 15.968065,
+   "trough": 15.968065,
    "date": "2026-11-20",
    "signal_date": "2026-11-18",
    "signal_price": 15.44,
    "order_id": "671f07f2-7522-4395-b250-9e20fd63546d",
-   "filled": false
+   "filled": true
   },
   {
    "ticker": "PRE",
    "name": "Prenetics Global Limited - Class A Ordinary Share",
    "qty": 48,
-   "entry": 10.365,
-   "trough": 10.365,
+   "entry": 9.89375,
+   "trough": 8.735,
    "date": "2026-11-20",
    "signal_date": "2026-11-18",
    "signal_price": 10.35,
    "order_id": "68047297-ab80-47e6-92c7-8de5c723a9c1",
-   "filled": false
+   "filled": true
   },
   {
    "ticker": "KRNT",
    "name": "Kornit Digital Ltd. - Ordinary Shares",
    "qty": 33,
-   "entry": 14.72,
-   "trough": 14.72,
+   "entry": 13.85,
+   "trough": 13.85,
    "date": "2026-11-20",
    "signal_date": "2026-11-18",
    "signal_price": 12.77,
    "order_id": "e2e87279-46df-4702-921e-08f87fe149af",
-   "filled": false
+   "filled": true
   }
  ],
  "closed": [],
