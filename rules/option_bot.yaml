@@ -1,0 +1,20 @@
+version: 1
+stage: paper_sim            # دفتر آزمایشی با قیمت واقعی بازار؛ هنوز سفارشی به Alpaca فرستاده نمی‌شود
+capital_usd: 10000
+risk_per_trade_usd: 400     # بیشترین ضرر هر معامله (همه‌ی استراتژی‌ها ریسک‌محدودند)
+max_positions: 6
+max_new_per_day: 3
+universe: [SPY, QQQ, IWM, DIA, XLF, XLE, GLD, TLT, AAPL, MSFT, NVDA, AMZN, GOOGL, META, TSLA, AMD, AVGO, JPM, NFLX, COST]
+min_dte: 28
+max_dte: 45
+exit_dte: 7
+max_rel_spread: 0.15        # اسپرد بید/اسک هر پا نسبت به میانه
+credit_min_frac: 0.30       # اعتبار دریافتی دست‌کم ۳۰٪ عرض اسپرد
+debit_max_frac: 0.55        # هزینه‌ی اسپرد بدهکار حداکثر ۵۵٪ عرض
+short_delta: 0.27           # پای فروخته‌شده‌ی اسپرد اعتباری
+long_delta_debit: 0.60      # پای خریده‌شده‌ی اسپرد بدهکار
+short_delta_debit: 0.30
+credit_take_profit: 0.50    # بستن با ۵۰٪ حداکثر سود
+credit_stop_mult: 2.0       # بستن اگر هزینه‌ی بستن ۲ برابر اعتبار شد
+debit_take_profit: 0.60
+debit_stop: 0.50

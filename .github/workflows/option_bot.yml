@@ -1,0 +1,38 @@
+name: 🎯 Option bot (daily, paper-sim)
+
+on:
+  schedule:
+    - cron: '30 15 * * 1-5'   # ۱۹:۰۰ تهران؛ وسط جلسه‌ی آمریکا (قیمت‌های زنده‌ی اختیار)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: portfolio
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -q requests pyyaml pytest pandas numpy
+      - name: Tests must pass first
+        run: python -m pytest -q tests
+      - run: scripts/datastore.sh pull
+      - name: Option bot
+        env:
+          ALPACA_KEY: ${{ secrets.ALPACA_KEY }}
+          ALPACA_SECRET: ${{ secrets.ALPACA_SECRET }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          echo "::add-mask::$TELEGRAM_BOT_TOKEN"
+          python3 option_bot.py
+      - if: always()
+        run: scripts/datastore.sh push "🎯 option bot $(date -u +%F)"
