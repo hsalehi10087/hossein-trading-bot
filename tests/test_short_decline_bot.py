@@ -72,8 +72,8 @@ def test_decline_streak_required_only_for_fund_decline():
 
 def test_exits_inverted_for_shorts():
     # حد ضرر: قیمت بالا رفت (برخلاف خرید که افت‌اش ضرر است)
-    assert D.exit_reason(lot(), 115.1, R, T).startswith('حد ضرر')
-    assert D.exit_reason(lot(), 114.0, R, T) is None
+    assert D.exit_reason(lot(), 110.1, R, T).startswith('حد ضرر')
+    assert D.exit_reason(lot(), 109.0, R, T) is None
     # بازگشت از کف: قیمت تا ۸۰ افت کرد (trough=80)، بعد ۲۰٪ بالا آمد (96) → پوشش با سود
     assert D.exit_reason(lot(trough=80), 96.0, R, T).startswith('بازگشت')
     assert D.exit_reason(lot(trough=80), 95.0, R, T) is None
@@ -115,3 +115,8 @@ def test_other_sleeves_cannot_short(tmp_path):
     q, ck = PC.Conductor(r, {'equity': 100000, 'cash': 90000}, [], str(tmp_path / 's.json')).approve(
         'copy_trade', {'symbol': 'ZZZ', 'side': 'sell', 'qty': 10, 'price': 50})
     assert q == 0
+
+
+def test_broker_stop_price_uses_rules_stop_loss():
+    assert D.stop_price({'entry': 100.0}, R) == round(100 * (1 + R['stop_loss_pct']), 2)
+    assert D.stop_price({'entry': 6.0}, R) == 6.6

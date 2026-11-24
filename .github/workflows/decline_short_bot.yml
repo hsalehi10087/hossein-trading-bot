@@ -3,6 +3,7 @@ name: 🔻 Decline short bot (daily, paper)
 on:
   schedule:
     - cron: '0 3 * * 1-5'   # ۰۶:۳۰ تهران، بعد از گزارش صبحگاهی (۰۵:۰۰) که سیگنال‌های افت را می‌نویسد
+    - cron: '0 15,17,19,20 * * 1-5'   # چهار بار در ساعات بازار آمریکا برای چک حد ضرر
   workflow_dispatch:
     inputs:
       dry_run:

@@ -198,6 +198,40 @@ def order(symbol, qty, side, coid):
     return r.json()
 
 
+def stop_price(lot, rules):
+    """قیمت سفارش حد ضرر بروکر برای شورت: ورود × (۱ + حد ضرر)، گرد به سنت."""
+    return round(float(lot['entry']) * (1 + rules['stop_loss_pct']), 2)
+
+
+def place_stop(lot, rules):
+    """سفارش خرید-توقف (buy stop) GTC در Alpaca: خود بروکر لحظه‌ای شورت را می‌بندد. شناسه را در lot ذخیره می‌کند."""
+    if DRY or lot.get('stop_order_id') or not lot.get('filled'):
+        return None
+    t = lot['ticker']
+    r = requests.post(ENDPOINT + '/orders', headers=H, timeout=30,
+                      json={'symbol': t, 'qty': str(int(lot['qty'])), 'side': 'buy', 'type': 'stop',
+                            'stop_price': str(stop_price(lot, rules)), 'time_in_force': 'gtc',
+                            'client_order_id': f"ds-s-{t}-{lot['date']}"[:48]})
+    if r.status_code >= 300:
+        print(f'❌ stop {t}: {r.status_code} {r.text[:150]}')
+        return None
+    lot['stop_order_id'] = r.json().get('id')
+    return lot['stop_order_id']
+
+
+def cancel_stop(lot):
+    """سفارش حد ضرر قبلی را لغو می‌کند (قبل از پوشش دستی). True یعنی دیگر سفارش بازی نمانده."""
+    oid = lot.get('stop_order_id')
+    if DRY or not oid:
+        return True
+    r = requests.delete(ENDPOINT + f'/orders/{oid}', headers=H, timeout=30)
+    if r.status_code in (200, 204, 404, 422):   # ۴۲۲/۴۰۴: قبلاً اجرا یا لغو شده
+        lot['stop_order_id'] = None
+        return True
+    print(f'❌ cancel stop {lot["ticker"]}: {r.status_code} {r.text[:150]}')
+    return False
+
+
 def tg(text):
     tok = os.getenv('TELEGRAM_BOT_TOKEN', '')
     print(text)
@@ -262,13 +296,26 @@ def main():
     for lot in state['lots']:
         t, p = lot['ticker'], prices.get(lot['ticker'])
         if lot.get('filled') and t not in pos:
-            notes.append(f'{t}: در حساب نیست (دستی بسته شده؟) — از فهرست حذف شد')
+            so = fetch_order(lot['stop_order_id']) if lot.get('stop_order_id') else None
+            if so and so.get('status') == 'filled' and so.get('filled_avg_price'):
+                px = float(so['filled_avg_price'])
+                ret = 1 - px / lot['entry']
+                state['closed'].append({'ticker': t, 'entry': lot['entry'], 'exit': px, 'ret': round(ret, 4),
+                                        'date_in': lot['date'], 'date_out': today,
+                                        'reason': f"حد ضرر بروکر {rules['stop_loss_pct'] * 100:.0f}٪",
+                                        'qty': int(lot['qty'])})
+                covers.append((lot, px, ret, 'حد ضرر بروکر'))
+            else:
+                notes.append(f'{t}: در حساب نیست (دستی بسته شده؟) — از فهرست حذف شد')
             continue
         if p and lot.get('filled'):
             lot['trough'] = min(lot.get('trough') or lot['entry'], p)
         why = exit_reason(lot, p, rules, today) if lot.get('filled') else None
         if why:
             q = min(int(lot['qty']), int(abs(float(pos[t]['qty']))))
+            if q >= 1 and not cancel_stop(lot):
+                keep.append(lot)
+                continue
             if q >= 1 and cond.approve(SLEEVE, {'symbol': t, 'side': 'buy', 'qty': q, 'price': p})[0] \
                     and order(t, q, 'buy', f'ds-c-{t}-{today}'):
                 ret = 1 - p / lot['entry']   # شورت: سود وقتی قیمت پایین‌تر از ورود پوشش داده شود
@@ -279,6 +326,9 @@ def main():
                     continue
         keep.append(lot)
     state['lots'] = keep
+    for lot in state['lots']:                      # هر شورت باز یک سفارش حد ضرر واقعی در بروکر دارد
+        if place_stop(lot, rules):
+            notes.append(f"{lot['ticker']}: سفارش حد ضرر بروکر ثبت شد ({stop_price(lot, rules)})")
 
     # ۲) شورت‌های تازه (ورود)
     own = {l['ticker'] for l in state['lots']}
