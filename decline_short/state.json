@@ -61,18 +61,6 @@
    "filled": true
   },
   {
-   "ticker": "RMIX",
-   "name": "Suncrete, Inc. - Class A Common Stock",
-   "qty": 79,
-   "entry": 6.0,
-   "trough": 5.845,
-   "date": "2026-11-19",
-   "signal_date": "2026-11-19",
-   "signal_price": 6.3,
-   "order_id": "3f1d120c-7e0e-4135-9a40-8ff103332ea3",
-   "filled": true
-  },
-  {
    "ticker": "SLQT",
    "name": "SelectQuote, Inc. Common Stock",
    "qty": 92,
@@ -113,7 +101,7 @@
    "name": "Warby Parker Inc. Class A Common Stock",
    "qty": 20,
    "entry": 23.614,
-   "trough": 23.115,
+   "trough": 22.85,
    "date": "2026-11-19",
    "signal_date": "2026-11-19",
    "signal_price": 24.13,
@@ -155,9 +143,32 @@
    "signal_price": 12.77,
    "order_id": "e2e87279-46df-4702-921e-08f87fe149af",
    "filled": true
+  },
+  {
+   "ticker": "BCBP",
+   "name": "BCB BANCORP INC",
+   "qty": 55,
+   "entry": 9.01,
+   "trough": 9.01,
+   "date": "2026-11-24",
+   "signal_date": "2026-11-24",
+   "signal_price": 8.9399995803833,
+   "order_id": "205552c8-a4f5-4e41-a761-3c14e058c2d4",
+   "filled": false
   }
  ],
- "closed": [],
+ "closed": [
+  {
+   "ticker": "RMIX",
+   "entry": 6.0,
+   "exit": 7.095,
+   "ret": -0.1825,
+   "date_in": "2026-11-19",
+   "date_out": "2026-11-24",
+   "reason": "حد ضرر 15٪",
+   "qty": 79
+  }
+ ],
  "processed": [
   "losers:2026-11-19:SA",
   "losers:2026-11-19:SNEX",
@@ -171,6 +182,7 @@
   "losers:2026-11-19:WRBY",
   "losers:2026-11-18:HY",
   "losers:2026-11-18:PRE",
-  "losers:2026-11-18:KRNT"
+  "losers:2026-11-18:KRNT",
+  "fund_decline:2026-11-24:BCBP"
  ]
 }
