@@ -109,7 +109,7 @@
    "name": "LivaNova",
    "qty": 5,
    "entry": 92.91,
-   "peak": 92.91,
+   "peak": 94.47,
    "date": "2026-11-19",
    "signal_date": "2026-11-19",
    "signal_price": 94.54,
@@ -135,7 +135,7 @@
    "name": "Donnelley Financial Solutions, Inc.",
    "qty": 7,
    "entry": 66.56,
-   "peak": 66.56,
+   "peak": 67.11,
    "date": "2026-11-20",
    "signal_date": "2026-11-20",
    "signal_price": 65.41,
@@ -147,13 +147,39 @@
    "ticker": "BTSG",
    "name": "BrightSpring Health Services",
    "qty": 7,
-   "entry": 65.04,
-   "peak": 65.04,
+   "entry": 65.06,
+   "peak": 65.605,
    "date": "2026-11-23",
    "signal_date": "2026-11-21",
    "signal_price": 62.84,
    "spy_entry": 723.955,
    "order_id": "f5f56f9a-af35-4d4e-9ce8-be5b52a6a027",
+   "filled": true
+  },
+  {
+   "ticker": "CNO",
+   "name": "CNO Financial Group",
+   "qty": 8,
+   "entry": 56.1,
+   "peak": 56.1,
+   "date": "2026-11-24",
+   "signal_date": "2026-11-24",
+   "signal_price": 55.83,
+   "spy_entry": 719.415,
+   "order_id": "1c7a0539-6d55-4627-ab5e-bb3a09209681",
+   "filled": false
+  },
+  {
+   "ticker": "CSX",
+   "name": "CSX Corporation",
+   "qty": 9,
+   "entry": 50.15,
+   "peak": 50.15,
+   "date": "2026-11-24",
+   "signal_date": "2026-11-24",
+   "signal_price": 49.485,
+   "spy_entry": 719.415,
+   "order_id": "c76f452d-f1f6-4683-b621-b2943e3307fd",
    "filled": false
   }
  ],
@@ -170,6 +196,8 @@
   "2026-11-19:LIVN",
   "2026-11-19:FIVE",
   "2026-11-20:DFIN",
-  "2026-11-21:BTSG"
+  "2026-11-21:BTSG",
+  "2026-11-24:CNO",
+  "2026-11-24:CSX"
  ]
 }
