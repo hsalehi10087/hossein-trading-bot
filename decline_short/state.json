@@ -61,18 +61,6 @@
    "filled": true
   },
   {
-   "ticker": "SLQT",
-   "name": "SelectQuote, Inc. Common Stock",
-   "qty": 92,
-   "entry": 5.19,
-   "trough": 4.96,
-   "date": "2026-11-19",
-   "signal_date": "2026-11-19",
-   "signal_price": 5.35,
-   "order_id": "17af7c58-b930-4299-8373-bd757975957a",
-   "filled": true
-  },
-  {
    "ticker": "WSM",
    "name": "Williams-Sonoma, Inc. Common Stock (DE)",
    "qty": 2,
@@ -113,7 +101,7 @@
    "name": "Hyster-Yale, Inc. Class A common stock",
    "qty": 31,
    "entry": 15.968065,
-   "trough": 15.968065,
+   "trough": 15.64,
    "date": "2026-11-20",
    "signal_date": "2026-11-18",
    "signal_price": 15.44,
@@ -148,13 +136,13 @@
    "ticker": "BCBP",
    "name": "BCB BANCORP INC",
    "qty": 55,
-   "entry": 9.01,
-   "trough": 9.01,
+   "entry": 8.9,
+   "trough": 8.9,
    "date": "2026-11-24",
    "signal_date": "2026-11-24",
    "signal_price": 8.9399995803833,
    "order_id": "205552c8-a4f5-4e41-a761-3c14e058c2d4",
-   "filled": false
+   "filled": true
   }
  ],
  "closed": [
@@ -167,6 +155,16 @@
    "date_out": "2026-11-24",
    "reason": "حد ضرر 15٪",
    "qty": 79
+  },
+  {
+   "ticker": "SLQT",
+   "entry": 5.19,
+   "exit": 6.77,
+   "ret": -0.3044,
+   "date_in": "2026-11-19",
+   "date_out": "2026-11-25",
+   "reason": "حد ضرر 15٪",
+   "qty": 92
   }
  ],
  "processed": [
