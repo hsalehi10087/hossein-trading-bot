@@ -57,7 +57,7 @@
    "name": "Church & Dwight",
    "qty": 4,
    "entry": 113.59,
-   "peak": 113.59,
+   "peak": 114.51,
    "date": "2026-11-17",
    "signal_date": "2026-11-17",
    "signal_price": 114.74,
@@ -160,26 +160,39 @@
    "ticker": "CNO",
    "name": "CNO Financial Group",
    "qty": 8,
-   "entry": 56.1,
-   "peak": 56.1,
+   "entry": 56.16,
+   "peak": 56.16,
    "date": "2026-11-24",
    "signal_date": "2026-11-24",
    "signal_price": 55.83,
    "spy_entry": 719.415,
    "order_id": "1c7a0539-6d55-4627-ab5e-bb3a09209681",
-   "filled": false
+   "filled": true
   },
   {
    "ticker": "CSX",
    "name": "CSX Corporation",
    "qty": 9,
    "entry": 50.15,
-   "peak": 50.15,
+   "peak": 50.54,
    "date": "2026-11-24",
    "signal_date": "2026-11-24",
    "signal_price": 49.485,
    "spy_entry": 719.415,
    "order_id": "c76f452d-f1f6-4683-b621-b2943e3307fd",
+   "filled": true
+  },
+  {
+   "ticker": "KNTK",
+   "name": "Kinetik Holdings, Inc.",
+   "qty": 9,
+   "entry": 54.7,
+   "peak": 54.7,
+   "date": "2026-11-25",
+   "signal_date": "2026-11-25",
+   "signal_price": 53.91,
+   "spy_entry": 706.46,
+   "order_id": "de9599f4-a8eb-4234-9ac0-b96aa3b307e5",
    "filled": false
   }
  ],
@@ -198,6 +211,7 @@
   "2026-11-20:DFIN",
   "2026-11-21:BTSG",
   "2026-11-24:CNO",
-  "2026-11-24:CSX"
+  "2026-11-24:CSX",
+  "2026-11-25:KNTK"
  ]
 }
