@@ -44,3 +44,6 @@
 {"sleeve": "dbmf_band", "session": "2026-11-24", "signal_close": 31.58, "sma": 31.03, "gap_pct": 1.78, "inside": true, "held": 158.0, "action": null}
 {"sleeve": "spy_10m", "session": "2026-11-24", "signal_close": 718.78, "sma": 728.48, "gap_pct": -1.33, "inside": false, "held": 0.0, "action": null}
 {"sleeve": "qqq_200", "session": "2026-11-24", "signal_close": 638.1, "sma": 682.42, "gap_pct": -6.49, "inside": false, "held": 0.0, "action": null}
+{"sleeve": "dbmf_band", "session": "2026-11-25", "signal_close": 31.51, "sma": 31.03, "gap_pct": 1.53, "inside": true, "held": 158.0, "action": null}
+{"sleeve": "spy_10m", "session": "2026-11-25", "signal_close": 716.7, "sma": 728.6, "gap_pct": -1.63, "inside": false, "held": 0.0, "action": null}
+{"sleeve": "qqq_200", "session": "2026-11-25", "signal_close": 633.93, "sma": 682.54, "gap_pct": -7.12, "inside": false, "held": 0.0, "action": null}
