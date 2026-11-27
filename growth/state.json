@@ -109,7 +109,7 @@
    "name": "LivaNova",
    "qty": 5,
    "entry": 92.91,
-   "peak": 94.47,
+   "peak": 94.515,
    "date": "2026-11-19",
    "signal_date": "2026-11-19",
    "signal_price": 94.54,
@@ -161,7 +161,7 @@
    "name": "CNO Financial Group",
    "qty": 8,
    "entry": 56.16,
-   "peak": 56.16,
+   "peak": 56.58,
    "date": "2026-11-24",
    "signal_date": "2026-11-24",
    "signal_price": 55.83,
@@ -174,7 +174,7 @@
    "name": "CSX Corporation",
    "qty": 9,
    "entry": 50.15,
-   "peak": 50.54,
+   "peak": 51.33,
    "date": "2026-11-24",
    "signal_date": "2026-11-24",
    "signal_price": 49.485,
@@ -186,13 +186,39 @@
    "ticker": "KNTK",
    "name": "Kinetik Holdings, Inc.",
    "qty": 9,
-   "entry": 54.7,
-   "peak": 54.7,
+   "entry": 54.81,
+   "peak": 59.705,
    "date": "2026-11-25",
    "signal_date": "2026-11-25",
    "signal_price": 53.91,
    "spy_entry": 706.46,
    "order_id": "de9599f4-a8eb-4234-9ac0-b96aa3b307e5",
+   "filled": true
+  },
+  {
+   "ticker": "BGC",
+   "name": "BGC Group, Inc.",
+   "qty": 42,
+   "entry": 11.74,
+   "peak": 11.74,
+   "date": "2026-11-27",
+   "signal_date": "2026-11-27",
+   "signal_price": 11.575,
+   "spy_entry": 727.65,
+   "order_id": "7d3ddfba-915e-4779-a6e1-49717765c624",
+   "filled": false
+  },
+  {
+   "ticker": "RS",
+   "name": "Reliance, Inc.",
+   "qty": 1,
+   "entry": 422.16,
+   "peak": 422.16,
+   "date": "2026-11-27",
+   "signal_date": "2026-11-27",
+   "signal_price": 421.175,
+   "spy_entry": 727.65,
+   "order_id": "60bf8094-27bf-4c04-a9cb-246f3900b48a",
    "filled": false
   }
  ],
@@ -212,6 +238,8 @@
   "2026-11-21:BTSG",
   "2026-11-24:CNO",
   "2026-11-24:CSX",
-  "2026-11-25:KNTK"
+  "2026-11-25:KNTK",
+  "2026-11-27:BGC",
+  "2026-11-27:RS"
  ]
 }
