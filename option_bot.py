@@ -9,6 +9,9 @@
   bear_put_debit    روند نزولی + شکست قیمت: خرید اسپرد پوت
 وضعیت: datastore/option/state.json {open, closed, signals, started}
 """
+import os as _os, sys as _sys
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+from jalali import to_jalali_text as _jt  # noqa: E402
 import datetime as dt
 import json
 import os
@@ -226,7 +229,7 @@ def tg(text):
     print(text)
     for c in [c.strip() for c in os.getenv('TELEGRAM_CHAT_ID', '').split(',') if c.strip() and c.strip() != 'none']:
         requests.post(f'https://api.telegram.org/bot{tok}/sendMessage', timeout=30,
-                      data={'chat_id': c, 'text': text[:3900], 'parse_mode': 'HTML', 'disable_web_page_preview': 'true'})
+                      data={'chat_id': c, 'text': _jt(text[:3900]), 'parse_mode': 'HTML', 'disable_web_page_preview': 'true'})
 
 
 def summary(state):

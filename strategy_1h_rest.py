@@ -3,6 +3,9 @@
 Uses Alpaca REST API directly + Finnhub + Telegram
 """
 
+import os as _os, sys as _sys
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+from jalali import to_jalali_text as _jt  # noqa: E402
 import os
 import json
 import datetime as dt
@@ -213,7 +216,7 @@ def send_telegram(msg):
         token = cfg("TELEGRAM_BOT_TOKEN")
         chat = cfg("TELEGRAM_CHAT_ID")
         url = f"https://api.telegram.org/bot{token}/sendMessage"
-        requests.post(url, data={"chat_id": chat, "text": msg, "parse_mode": "HTML"}, timeout=10)
+        requests.post(url, data={"chat_id": chat, "text": _jt(msg), "parse_mode": "HTML"}, timeout=10)
         return True
     except Exception as e:
         print(f"Telegram error: {e}")

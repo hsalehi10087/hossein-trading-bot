@@ -7,6 +7,9 @@
 هر اجرا بی‌خطر تکرارپذیر است: وضعیت در datastore/eth/state.json؛ خرید از هماهنگ‌کننده‌ی سبد اجازه می‌گیرد.
 پیام تلگرام فقط هنگام ورود و خروج.
 """
+import os as _os, sys as _sys
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+from jalali import to_jalali_text as _jt  # noqa: E402
 import datetime as dt
 import json
 import os
@@ -105,7 +108,7 @@ def tg(text):
     tok = os.getenv('TELEGRAM_BOT_TOKEN', '')
     for c in [c.strip() for c in os.getenv('TELEGRAM_CHAT_ID', '').split(',') if c.strip() and c.strip() != 'none']:
         requests.post(f'https://api.telegram.org/bot{tok}/sendMessage', timeout=20,
-                      data={'chat_id': c, 'text': text, 'parse_mode': 'HTML'})
+                      data={'chat_id': c, 'text': _jt(text), 'parse_mode': 'HTML'})
 
 
 def main():

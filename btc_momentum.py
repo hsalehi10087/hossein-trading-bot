@@ -4,6 +4,9 @@
 بیت‌کوین؛ اگر پایین‌تر است → همه فروخته می‌شود. روزی یک بار. هر سفارش از هماهنگ‌کننده‌ی سبد (btc_momentum) اجازه می‌گیرد.
 پیام تلگرام فقط وقتی معامله‌ای انجام شود؛ وضعیت روزانه در گزارش واحد ۱۹:۱۵ می‌آید.
 """
+import os as _os, sys as _sys
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+from jalali import to_jalali_text as _jt  # noqa: E402
 import datetime as dt
 import json
 import os
@@ -68,7 +71,7 @@ def tg(text):
     tok = os.getenv('TELEGRAM_BOT_TOKEN', '')
     for c in [c.strip() for c in os.getenv('TELEGRAM_CHAT_ID', '').split(',') if c.strip() and c.strip() != 'none']:
         requests.post(f'https://api.telegram.org/bot{tok}/sendMessage', timeout=20,
-                      data={'chat_id': c, 'text': text, 'parse_mode': 'HTML'})
+                      data={'chat_id': c, 'text': _jt(text), 'parse_mode': 'HTML'})
 
 
 def main():

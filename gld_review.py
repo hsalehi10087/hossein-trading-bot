@@ -6,6 +6,9 @@
 و هم در آزمون (نه بدتر) از پارامترهای فعلی بهتر باشد. هیچ پارامتری خودکار عوض نمی‌شود: پیشنهاد به‌صورت یک
 Pull Request روی rules/gld_trend.yaml (با version+1) باز می‌شود و فقط با merge کاربر اعمال می‌شود.
 """
+import os as _os, sys as _sys
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+from jalali import to_jalali_text as _jt  # noqa: E402
 import datetime as dt
 import itertools
 import json
@@ -63,7 +66,7 @@ def tg(text):
     tok, chats = os.getenv('TELEGRAM_BOT_TOKEN', ''), [c.strip() for c in os.getenv('TELEGRAM_CHAT_ID', '').split(',') if c.strip()]
     for c in chats:
         requests.post(f'https://api.telegram.org/bot{tok}/sendMessage',
-                      data={'chat_id': c, 'text': text, 'parse_mode': 'HTML'}, timeout=20)
+                      data={'chat_id': c, 'text': _jt(text), 'parse_mode': 'HTML'}, timeout=20)
 
 
 def open_pr(rules, best, curr, today, fmt, line):
