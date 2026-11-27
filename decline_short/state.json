@@ -17,7 +17,7 @@
    "name": "StoneX Group Inc. - Common Stock",
    "qty": 12,
    "entry": 37.214167,
-   "trough": 36.625,
+   "trough": 36.23,
    "date": "2026-11-19",
    "signal_date": "2026-11-19",
    "signal_price": 39.45,
@@ -73,23 +73,11 @@
    "filled": true
   },
   {
-   "ticker": "CTEV",
-   "name": "Claritev Corporation Class A Common Stock",
-   "qty": 26,
-   "entry": 18.0,
-   "trough": 18.0,
-   "date": "2026-11-19",
-   "signal_date": "2026-11-19",
-   "signal_price": 19.03,
-   "order_id": "e5241b79-2189-4176-9a2c-c26fd2e0d650",
-   "filled": true
-  },
-  {
    "ticker": "WRBY",
    "name": "Warby Parker Inc. Class A Common Stock",
    "qty": 20,
    "entry": 23.614,
-   "trough": 22.85,
+   "trough": 22.8,
    "date": "2026-11-19",
    "signal_date": "2026-11-19",
    "signal_price": 24.13,
@@ -143,6 +131,18 @@
    "signal_price": 8.9399995803833,
    "order_id": "205552c8-a4f5-4e41-a761-3c14e058c2d4",
    "filled": true
+  },
+  {
+   "ticker": "AMBA",
+   "name": "Ambarella, Inc. - Ordinary Shares",
+   "qty": 14,
+   "entry": 35.665,
+   "trough": 35.665,
+   "date": "2026-11-27",
+   "signal_date": "2026-11-25",
+   "signal_price": 35.68,
+   "order_id": "f931e94e-aa0d-48aa-99bf-562306065e58",
+   "filled": false
   }
  ],
  "closed": [
@@ -165,6 +165,16 @@
    "date_out": "2026-11-25",
    "reason": "حد ضرر 15٪",
    "qty": 92
+  },
+  {
+   "ticker": "CTEV",
+   "entry": 18.0,
+   "exit": 21.3,
+   "ret": -0.1833,
+   "date_in": "2026-11-19",
+   "date_out": "2026-11-27",
+   "reason": "حد ضرر 15٪",
+   "qty": 26
   }
  ],
  "processed": [
@@ -181,6 +191,7 @@
   "losers:2026-11-18:HY",
   "losers:2026-11-18:PRE",
   "losers:2026-11-18:KRNT",
-  "fund_decline:2026-11-24:BCBP"
+  "fund_decline:2026-11-24:BCBP",
+  "losers:2026-11-25:AMBA"
  ]
 }
