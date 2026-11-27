@@ -4,6 +4,9 @@
 (وزن = سرمایه‌ی تعیین‌شده در rules/portfolio.yaml). کپی ترید و ربات ساعتی (نمادهای متغیر) کنار گذاشته می‌شوند.
 تمرکز واقعی هم از موقعیت‌های فعلی حساب Alpaca حساب می‌شود. پیام تلگرام اولین یکشنبه‌ی هر ماه.
 """
+import os as _os, sys as _sys
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+from jalali import to_jalali_text as _jt  # noqa: E402
 import datetime as dt
 import json
 import os
@@ -91,7 +94,7 @@ def tg(t):
     tok = os.getenv('TELEGRAM_BOT_TOKEN', '')
     for c in [c.strip() for c in os.getenv('TELEGRAM_CHAT_ID', '').split(',') if c.strip() and c.strip() != 'none']:
         requests.post(f'https://api.telegram.org/bot{tok}/sendMessage', timeout=20,
-                      data={'chat_id': c, 'text': t, 'parse_mode': 'HTML'})
+                      data={'chat_id': c, 'text': _jt(t), 'parse_mode': 'HTML'})
 
 
 def main():

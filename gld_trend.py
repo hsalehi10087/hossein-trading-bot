@@ -5,6 +5,9 @@
 هیچ دستور لحظه‌ای انسانی وارد این مسیر نمی‌شود؛ تنها راه تغییر رفتار، تغییر فایل قوانین با Pull Request است.
 DRY_RUN=true → سفارش ثبت نمی‌شود. KILL_SWITCH=true (متغیر مخزن) → خرید جدید مسدود.
 """
+import os as _os, sys as _sys
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+from jalali import to_jalali_text as _jt  # noqa: E402
 import datetime as dt
 import os
 import sys
@@ -47,7 +50,7 @@ def tg(text):
     for c in [c.strip() for c in os.getenv('TELEGRAM_CHAT_ID', '').split(',') if c.strip() and c.strip() != 'none']:
         try:
             requests.post(f'https://api.telegram.org/bot{tok}/sendMessage',
-                          data={'chat_id': c, 'text': text, 'parse_mode': 'HTML'}, timeout=20)
+                          data={'chat_id': c, 'text': _jt(text), 'parse_mode': 'HTML'}, timeout=20)
         except Exception as e:
             print('telegram error', e, file=sys.stderr)
 

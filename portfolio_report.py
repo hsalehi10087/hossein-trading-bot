@@ -3,6 +3,9 @@ Daily Portfolio Report - هر روز گزارش پرتفوی
 Sends Telegram report with positions, PnL, and strategy status
 """
 
+import os as _os, sys as _sys
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+from jalali import to_jalali_text as _jt  # noqa: E402
 import os
 import json
 import datetime as dt
@@ -203,7 +206,7 @@ def send_telegram(msg):
             url,
             data={
                 "chat_id": chat,
-                "text": msg,
+                "text": _jt(msg),
                 "parse_mode": "HTML"
             },
             timeout=10

@@ -13,6 +13,9 @@
      سقف هر معامله ۱۰۰۰، سقف هر تریدر ۲۰۰۰، سقف کل ۱۰٬۰۰۰
   ۵) گزارش تلگرام یکجا
 """
+import os as _os, sys as _sys
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+from jalali import to_jalali_text as _jt, jdate as _jd  # noqa: E402
 import datetime as dt
 import hashlib
 import json
@@ -182,7 +185,7 @@ def tg(text):
     for c in chats:
         for i in range(0, len(text), 3900):
             requests.post(f'https://api.telegram.org/bot{tok}/sendMessage', timeout=30,
-                          data={'chat_id': c, 'text': text[i:i + 3900], 'parse_mode': 'HTML',
+                          data={'chat_id': c, 'text': _jt(text[i:i + 3900]), 'parse_mode': 'HTML',
                                 'disable_web_page_preview': 'true'})
 
 
@@ -399,7 +402,7 @@ def report(state, sel, prices, buys, sells, removed, skipped, notes, today, even
         for l in sorted(state['lots'], key=lambda x: x['date']):
             p = prices.get(l['ticker'])
             r = f"{fa(f'{(p / l['entry'] - 1) * 100:+.1f}')}٪" if p else '—'
-            L.append(f"<b>{l['ticker']}</b> × {fa(l['qty'])} از {fa(l['date'][5:].replace('-', '/'))}: {r} ({l['leader'].split(':', 1)[1][:24]})")
+            L.append(f"<b>{l['ticker']}</b> × {fa(l['qty'])} از {fa(_jd(l['date'], short=True))}: {r} ({l['leader'].split(':', 1)[1][:24]})")
     active = sum(1 for n, v in sel.items() if v.get('active') and not state['leaders'].get(n, {}).get('removed'))
     inv = sum(l['qty'] * l['entry'] for l in state['lots'])
     L.append(f"<i>تریدرهای فعال: {fa(active)} | سرمایه‌ی درگیر: {fa(f'{inv:,.0f}')} از ۱۰٬۰۰۰ دلار | "
