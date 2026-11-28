@@ -1,5 +1,8 @@
 time_tehran,symbol,type,qty,buy_price,status,exit_or_now,pl_usd,pl_pct
-2026-11-24 22:00,CRGY,stock,5.0,10.57,open,10.72,0.75,1.42
+2026-11-27 21:00,KRMN,stock,1.0,31.13,open,30.91,-0.22,-0.71
+2026-11-27 20:00,CRGY,stock,4.0,10.83,open,10.79,-0.16,-0.37
+2026-11-27 19:00,KRMN,stock,1.0,30.11,closed,30.97,0.86,2.86
+2026-11-24 22:00,CRGY,stock,5.0,10.57,closed,10.89,1.6,3.03
 2026-11-16 20:00,KRMN,stock,1.0,39.37,closed,35.69,-3.68,-9.35
 2026-11-12 22:00,CRGY,stock,4.0,12.12,closed,11.72,-1.59,-3.28
 2026-11-11 23:45,CRGY,stock,4.0,11.6,closed,11.95,1.4,3.02
